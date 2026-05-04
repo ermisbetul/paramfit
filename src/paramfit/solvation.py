@@ -100,8 +100,11 @@ class GBSolvationModel:
     @staticmethod
     def get_dij(symbol_i, symbol_j, gb_dij):
         if isinstance(gb_dij, dict):
-            if symbol_i == "H" or symbol_j == "H":
+            pair = {symbol_i, symbol_j}
+            if pair == {"C", "H"}:
                 return gb_dij.get("dCH", gb_dij.get("d0"))
+            if pair == {"N", "H"} and "dNH" in gb_dij:
+                return gb_dij.get("dNH", gb_dij.get("d0"))
             return gb_dij.get("d0")
 
         return gb_dij

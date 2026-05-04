@@ -13,10 +13,15 @@ This module contains:
 
 import numpy as np
 from dataclasses import dataclass, field
+from pathlib import Path
+import tomllib
 from scipy.optimize import least_squares, differential_evolution
 
 from .constants import BOHR2ANG, SMD_ICR_ANG, DEFAULT_SIJ
 from .solvation import GBSolvationModel
+
+HALOGENS = ("F", "CL", "BR")
+HALOGEN_GROUPS = ("XX", "XH", "HX", "XC", "CX", "XO", "OX", "XN", "NX", "XS", "SX", "XP", "PX")
 
 
 @dataclass
@@ -26,6 +31,7 @@ class ParamFit:
     data: dict
     ref_file: str = "ref.txt"
     output_file: str = "paramfit.out"
+    parameter_output_file: str | None = None
 
     qcmethod: str = "SCF"
     solvent_eps: float = 78.3553
@@ -34,13 +40,17 @@ class ParamFit:
     gb_sij: float = 0.75
     gb_dij: float = 4.0
     gb_dch: float = 4.0
+    gb_dnh: float = 4.0
     gb_cij: float = 0.0
 
     optimize_sij: bool = False
     optimize_dij: bool = False
     optimize_dch: bool = False
+    optimize_dnh: bool = False
+    use_dnh: bool = False
     parameter_mode: str = "explicit"
     objective: str = "mae"
+    max_penalty_weight: float = 1.0
 
     mae_tol: float = 0.50
     rms_tol: float = 0.80
@@ -70,6 +80,67 @@ class ParamFit:
 
         self._build_distance_matrices()
         self._initialize_radii()
+
+    def load_parameter_file(self, parameter_file):
+        with open(parameter_file, "rb") as handle:
+            params = tomllib.load(handle)
+
+        for atom, value in params.get("rho_ang", {}).items():
+            self.rho_bohr[atom.upper()] = float(value) / BOHR2ANG
+
+        for key, value in params.get("sij", {}).items():
+            left, right = key.upper().split("_", 1)
+            self.sij[(left, right)] = float(value)
+
+        dij = params.get("dij", {})
+        if "d0" in dij:
+            self.gb_dij = float(dij["d0"])
+        if "dCH" in dij:
+            self.gb_dch = float(dij["dCH"])
+        if "dNH" in dij:
+            self.gb_dnh = float(dij["dNH"])
+            self.use_dnh = True
+
+    def parameter_file_name(self):
+        if self.parameter_output_file:
+            return self.parameter_output_file
+        return str(Path(self.output_file).with_suffix(".params.toml"))
+
+    def write_parameter_file(self, x, names):
+        rho, sij, gb_dij = self.unpack(x, names)
+        parameter_file = self.parameter_file_name()
+
+        with open(parameter_file, "w") as handle:
+            handle.write("[metadata]\n")
+            handle.write(f'source_output = "{self.output_file}"\n')
+            handle.write(f'parameter_mode = "{self.parameter_mode}"\n')
+            handle.write(f'objective = "{self.objective}"\n')
+            handle.write("cds_treatment = \"fixed\"\n")
+            handle.write("\n")
+
+            handle.write("[rho_ang]\n")
+            for atom in sorted(rho):
+                handle.write(f"{atom} = {rho[atom] * BOHR2ANG:.10f}\n")
+            handle.write("\n")
+
+            handle.write("[sij]\n")
+            for pair in sorted(sij):
+                handle.write(f"{pair[0]}_{pair[1]} = {sij[pair]:.10f}\n")
+            handle.write("\n")
+
+            handle.write("[dij]\n")
+            if isinstance(gb_dij, dict):
+                handle.write(f"d0 = {gb_dij['d0']:.10f}\n")
+                handle.write(f"dCH = {gb_dij['dCH']:.10f}\n")
+                if "dNH" in gb_dij:
+                    handle.write(f"dNH = {gb_dij['dNH']:.10f}\n")
+            else:
+                handle.write(f"d0 = {gb_dij:.10f}\n")
+                handle.write(f"dCH = {self.gb_dch:.10f}\n")
+                if self.use_dnh or self.optimize_dnh:
+                    handle.write(f"dNH = {self.gb_dnh:.10f}\n")
+
+        return parameter_file
 
     # -------------------------------------------------------------------------
     # Opens the output file. This replaces outfile->Printf behavior in C++.
@@ -139,6 +210,7 @@ class ParamFit:
         lower = []
         upper = []
         names = []
+        parameter_mode = self.parameter_mode.lower()
 
         for atom in self.fit_atoms:
             if atom not in self.rho_bohr:
@@ -149,25 +221,31 @@ class ParamFit:
             upper.append(3.0 / BOHR2ANG)
             names.append(("rho", atom))
 
-        if self.optimize_sij and self.parameter_mode.lower() == "hco-paper":
+        if self.optimize_sij and parameter_mode in ("hco-grouped", "hco-paper"):
             for group in ["HH", "HC", "HO", "CH", "OH", "CX", "OX"]:
                 x0.append(self._initial_sij_group_value(group))
                 lower.append(0.5)
                 upper.append(1.0)
                 names.append(("sij_group", group))
+        elif self.optimize_sij and parameter_mode == "hal-grouped":
+            for group in HALOGEN_GROUPS:
+                x0.append(self._initial_hal_sij_group_value(group))
+                lower.append(0.5)
+                upper.append(1.0)
+                names.append(("hal_sij_group", group))
         elif self.optimize_sij:
             for pair in self.fit_sij_pairs:
                 if pair not in self.sij:
                     raise RuntimeError(f"No initial Sij value is available for pair {pair}.")
 
                 x0.append(self.sij[pair])
-                lower.append(0.3)
-                upper.append(1.7)
+                lower.append(0.5)
+                upper.append(1.0)
                 names.append(("sij", pair))
 
         if self.optimize_dij:
             x0.append(self.gb_dij)
-            if self.parameter_mode.lower() == "hco-paper":
+            if parameter_mode in ("hco-grouped", "hco-paper") or self.optimize_dch:
                 lower.append(3.0)
                 upper.append(5.0)
             else:
@@ -180,6 +258,12 @@ class ParamFit:
             lower.append(3.0)
             upper.append(5.0)
             names.append(("dij", "dCH"))
+
+        if self.optimize_dnh:
+            x0.append(self.gb_dnh)
+            lower.append(3.0)
+            upper.append(5.0)
+            names.append(("dij", "dNH"))
 
         return np.array(x0), (np.array(lower), np.array(upper)), names
 
@@ -198,6 +282,29 @@ class ParamFit:
             raise RuntimeError(f"Unknown HCO Sij group {group}.")
 
         return values[group]
+
+    def _halogen_group_pairs(self, group):
+        if group == "XX":
+            return [(left, right) for left in HALOGENS for right in HALOGENS]
+
+        if len(group) != 2:
+            raise RuntimeError(f"Unknown halogen Sij group {group}.")
+
+        left, right = group
+        left_atoms = HALOGENS if left == "X" else (left,)
+        right_atoms = HALOGENS if right == "X" else (right,)
+        return [(left_atom, right_atom) for left_atom in left_atoms for right_atom in right_atoms]
+
+    def _initial_hal_sij_group_value(self, group):
+        pairs = self._halogen_group_pairs(group)
+        values = []
+
+        for pair in pairs:
+            if pair not in self.sij:
+                raise RuntimeError(f"No initial Sij value is available for pair {pair}.")
+            values.append(self.sij[pair])
+
+        return float(np.mean(values))
 
     def _apply_sij_group(self, sij, group, value):
         if group == "HH":
@@ -219,6 +326,10 @@ class ParamFit:
         else:
             raise RuntimeError(f"Unknown HCO Sij group {group}.")
 
+    def _apply_hal_sij_group(self, sij, group, value):
+        for pair in self._halogen_group_pairs(group):
+            sij[pair] = value
+
     # -------------------------------------------------------------------------
     # Converts optimizer vector x back to physical parameters.
     # -------------------------------------------------------------------------
@@ -226,6 +337,8 @@ class ParamFit:
         rho = dict(self.rho_bohr)
         sij = dict(self.sij)
         gb_dij = {"d0": self.gb_dij, "dCH": self.gb_dch}
+        if self.use_dnh or self.optimize_dnh:
+            gb_dij["dNH"] = self.gb_dnh
 
         for value, name in zip(x, names):
             if name[0] == "rho":
@@ -234,13 +347,12 @@ class ParamFit:
                 sij[name[1]] = value
             elif name[0] == "sij_group":
                 self._apply_sij_group(sij, name[1], value)
+            elif name[0] == "hal_sij_group":
+                self._apply_hal_sij_group(sij, name[1], value)
             elif name[0] == "dij":
                 gb_dij[name[1]] = value
             else:
                 raise RuntimeError(f"Unknown parameter type {name[0]}.")
-
-        if not self.optimize_dch:
-            gb_dij = gb_dij["d0"]
 
         return rho, sij, gb_dij
 
@@ -333,6 +445,12 @@ class ParamFit:
             return self.objective_mae(x, names)
         if objective == "rmse":
             return self.objective_rmse(x, names)
+        if objective == "mae-max":
+            res = self.residuals_no_print(x, names)
+            mae = np.mean(np.abs(res))
+            maxerr = np.max(np.abs(res))
+            excess = max(0.0, maxerr - self.max_tol)
+            return mae + self.max_penalty_weight * excess**2
 
         raise RuntimeError(f"Unknown objective function {self.objective}.")
 
@@ -355,6 +473,13 @@ class ParamFit:
         self.printf("  Optimize Sij                 : %s\n", str(self.optimize_sij))
         self.printf("  Optimize d0                  : %s\n", str(self.optimize_dij))
         self.printf("  Optimize dCH                 : %s\n", str(self.optimize_dch))
+        self.printf("  Use dNH                     : %s\n", str(self.use_dnh or self.optimize_dnh))
+        self.printf("  Optimize dNH                : %s\n", str(self.optimize_dnh))
+        self.printf("  Fit atoms                    : %s\n", ", ".join(self.fit_atoms))
+        if self.optimize_sij and self.fit_sij_pairs:
+            self.printf("  Optimized Sij pairs          :\n")
+            for pair in self.fit_sij_pairs:
+                self.printf("    S_%s_%s\n", pair[0], pair[1])
         self.printf("\n")
 
         self.printf("  Initial Parameters\n")
@@ -366,6 +491,8 @@ class ParamFit:
             elif name[0] == "sij":
                 self.printf("    S_%-2s_%-2s = %14.8f\n", name[1][0], name[1][1], value)
             elif name[0] == "sij_group":
+                self.printf("    S_%-3s = %14.8f\n", name[1], value)
+            elif name[0] == "hal_sij_group":
                 self.printf("    S_%-3s = %14.8f\n", name[1], value)
             elif name[0] == "dij":
                 self.printf("    %-3s = %14.8f\n", name[1], value)
@@ -482,6 +609,7 @@ class ParamFit:
         )
 
         self.print_result(result.x, names)
+        parameter_file = self.write_parameter_file(result.x, names)
 
         self.printf("\n")
         self.printf("  Optimization Finished\n")
@@ -489,6 +617,7 @@ class ParamFit:
         self.printf("  Success : %s\n", str(result.success))
         self.printf("  Message : %s\n", result.message)
         self.printf("  Nfev    : %d\n", result.nfev)
+        self.printf("  Parameter file : %s\n", parameter_file)
 
         self.close_output()
 
@@ -552,6 +681,7 @@ class ParamFit:
         self.printf("  Best %s = %14.8f kcal/mol\n\n", self.objective.upper(), de_result.fun)
 
         self.print_result(de_result.x, names)
+        parameter_file = self.write_parameter_file(de_result.x, names)
 
         self.printf("\n")
         self.printf("  Optimization Finished\n")
@@ -559,6 +689,7 @@ class ParamFit:
         self.printf("  Success : %s\n", str(de_result.success))
         self.printf("  Message : %s\n", de_result.message)
         self.printf("  Nfev    : %d\n", de_result.nfev)
+        self.printf("  Parameter file : %s\n", parameter_file)
 
         self.close_output()
 
