@@ -1,0 +1,2238 @@
+ ==========================================================================================
+ =========                __  ___                         ____  ______            =========
+ ======                  /  |/  /___ _______________     / __ \/ ____/               ======
+ ====                   / /|_/ / __ `/ ___/ ___/ __ \   / / / / /                      ====
+ ===                   / /  / / /_/ / /__/ /  / /_/ /  / /_/ / /___                     ===
+ ==                   /_/  /_/\__,_/\___/_/   \____/   \___\_\____/                      ==
+ ===                                                                1.0.4                ===
+ =====     An electronic structure theory software for large-scale applications       =====
+ ======                                 See license.txt for license info             ======
+ =========                                                                        =========
+ ==========================================================================================
+                                                                                           
+                           * * * * * * * * * * * * * * * * * * * *                        
+                           *            Developed by             *                        
+                           *             U. Bozkaya              *                        
+                           *                                     *                        
+                           *       With contributions from:      *                        
+                           *         B. Ermis, Y. Alagoz,        *                        
+                           *         A. Unal, and A. K. Uyar     *                        
+                           *         Git Version: deab493        *                        
+                           *       Latest Revision: 2026-03-23   *                        
+                           * * * * * * * * * * * * * * * * * * * *                        
+
+
+ Run date: Wed Mar 25 11:09:54 2026
+ 
+ Hostname: ub27 
+
+ ## MacroQC input file ##
+ ******************************************************************************************
+$set_molecule
+0 1
+O       1.5850165878    -0.4946385933    -0.0006940396
+O       2.9188998303     1.3771561139     0.0010290339
+C      -2.0865816697     0.3291926625    -0.0008803047
+C      -0.8096253148    -0.5082594512    -0.0000440086
+C      -3.3319509966    -0.5568508159     0.0013373650
+C       0.4388579034     0.3671400445    -0.0009554891
+C      -4.6060998528     0.2725656393    -0.0000591613
+C       2.7767180035     0.1627500467     0.0003773410
+C       3.9047961437    -0.8228065986    -0.0000030784
+H      -2.0993035326     0.9789655639    -0.8844341011
+H      -2.0984784360     0.9821066082     0.8803654725
+H      -0.7888596476    -1.1702639415    -0.8748340590
+H      -0.7887493416    -1.1684386622     0.8761201685
+H      -3.3265898393    -1.2091140291    -0.8797069394
+H      -3.3260652460    -1.2053078659     0.8851880678
+H       0.4566046684     0.9993933228     0.8945533798
+H       0.4563108601     0.9981373350    -0.8973487090
+H      -4.6579688852     0.9135873426     0.8857686640
+H      -4.6587914724     0.9092785981    -0.8889410497
+H      -5.4838443107    -0.3812432300     0.0019305687
+H       3.8578539515    -1.4396126994    -0.9009573535
+H       3.8531613853    -1.4458527271     0.8964053098
+H       4.8567032005    -0.2841649442     0.0045746436
+$end_molecule
+
+
+$set_globals
+   basis cc-pvdz
+  method mp2
+  reference rhf
+  jobtype energy
+  memory 30000
+$end_globals
+
+
+$set_scf
+  e_convergence 1.0e-8
+  d_convergence 1.0e-6
+  guess sad
+  solvation true
+$end_scf
+
+
+$set_solvation
+  cds_type smd
+  radius_type smd
+  solvent_params mn21
+  dielectric_params mn21 #sm8
+  sasa_type numeric
+  solvent water
+  num_ang_points 100
+  charge_type iao_mulliken #iao_lowdin, mulliken, lowdin
+  coulomb_radii smd
+$end_solvation
+
+$set_dfocc
+solvation true
+$end_dfocc
+
+ ******************************************************************************************
+
+
+	-Geometry before Center-of-Mass shift (ang): 
+	 Number     Atom               X                    Y                       Z  
+	 ---------------------------------------------------------------------------------------
+           1     O             1.5850165878         -0.4946385933          -0.0006940396  
+           2     O             2.9188998303          1.3771561139           0.0010290339  
+           3     C            -2.0865816697          0.3291926625          -0.0008803047  
+           4     C            -0.8096253148         -0.5082594512          -0.0000440086  
+           5     C            -3.3319509966         -0.5568508159           0.0013373650  
+           6     C             0.4388579034          0.3671400445          -0.0009554891  
+           7     C            -4.6060998528          0.2725656393          -0.0000591613  
+           8     C             2.7767180035          0.1627500467           0.0003773410  
+           9     C             3.9047961437         -0.8228065986          -0.0000030784  
+          10     H            -2.0993035326          0.9789655639          -0.8844341011  
+          11     H            -2.0984784360          0.9821066082           0.8803654725  
+          12     H            -0.7888596476         -1.1702639415          -0.8748340590  
+          13     H            -0.7887493416         -1.1684386622           0.8761201685  
+          14     H            -3.3265898393         -1.2091140291          -0.8797069394  
+          15     H            -3.3260652460         -1.2053078659           0.8851880678  
+          16     H             0.4566046684          0.9993933228           0.8945533798  
+          17     H             0.4563108601          0.9981373350          -0.8973487090  
+          18     H            -4.6579688852          0.9135873426           0.8857686640  
+          19     H            -4.6587914724          0.9092785981          -0.8889410497  
+          20     H            -5.4838443107         -0.3812432300           0.0019305687  
+          21     H             3.8578539515         -1.4396126994          -0.9009573535  
+          22     H             3.8531613853         -1.4458527271           0.8964053098  
+          23     H             4.8567032005         -0.2841649442           0.0045746436  
+
+
+
+	-Geometry after Center-of-Mass shift (ang): 
+	 Atom               X                    Y                       Z  
+	 -------------------------------------------------------------------
+     O           1.4803463436         -0.5138416250          -0.0007040622  
+     O           2.8142295861          1.3579530822           0.0010190113  
+     C          -2.1912519139          0.3099896308          -0.0008903273  
+     C          -0.9142955590         -0.5274624829          -0.0000540312  
+     C          -3.4366212408         -0.5760538476           0.0013273424  
+     C           0.3341876592          0.3479370128          -0.0009655117  
+     C          -4.7107700970          0.2533626076          -0.0000691839  
+     C           2.6720477593          0.1435470150           0.0003673184  
+     C           3.8001258995         -0.8420096303          -0.0000131010  
+     H          -2.2039737768          0.9597625322          -0.8844441237  
+     H          -2.2031486802          0.9629035765           0.8803554499  
+     H          -0.8935298918         -1.1894669732          -0.8748440816  
+     H          -0.8934195858         -1.1876416939           0.8761101459  
+     H          -3.4312600835         -1.2283170608          -0.8797169620  
+     H          -3.4307354902         -1.2245108976           0.8851780452  
+     H           0.3519344242          0.9801902911           0.8945433572  
+     H           0.3516406159          0.9789343033          -0.8973587316  
+     H          -4.7626391294          0.8943843109           0.8857586414  
+     H          -4.7634617166          0.8900755664          -0.8889510723  
+     H          -5.5885145549         -0.4004462617           0.0019205461  
+     H           3.7531837073         -1.4588157311          -0.9009673761  
+     H           3.7484911411         -1.4650557588           0.8963952872  
+     H           4.7520329563         -0.3033679759           0.0045646210  
+
+
+	-Geometry after Center-of-Mass shift (bohr): 
+	 Atom               X                    Y                       Z  
+	 -------------------------------------------------------------------
+     O           2.7974491602         -0.9710199432          -0.0013304848  
+     O           5.3181231719          2.5661594165           0.0019256522  
+     C          -4.1408659892          0.5857955039          -0.0016824748  
+     C          -1.7277682043         -0.9967596342          -0.0001021042  
+     C          -6.4942729421         -1.0885840056           0.0025083136  
+     C           0.6315231504          0.6575056630          -0.0018245527  
+     C          -8.9020653234          0.4787859387          -0.0001307387  
+     C           5.0494384592          0.2712645444           0.0006941311  
+     C           7.1811971923         -1.5911675964          -0.0000247574  
+     H          -4.1649068259          1.8136883312          -1.6713571671  
+     H          -4.1633476193          1.8196240447           1.6636306933  
+     H          -1.6885267804         -2.2477668147          -1.6532157168  
+     H          -1.6883183323         -2.2443175367           1.6556082314  
+     H          -6.4841418231         -2.3211828402          -1.6624241262  
+     H          -6.4831504854         -2.3139902342           1.6727440776  
+     H           0.6650596758          1.8522912009           1.6904419524  
+     H           0.6645044586          1.8499177280          -1.6957622391  
+     H          -9.0000835890          1.6901413984           1.6738412454  
+     H          -9.0016380535          1.6819990514          -1.6798740656  
+     H         -10.5607619569         -0.7567337627           0.0036293061  
+     H           7.0924893053         -2.7567621994          -1.7025815889  
+     H           7.0836216403         -2.7685541427           1.6939415929  
+     H           8.9800408265         -0.5732823898           0.0086258835  
+
+
+    Rotational Constants: A =     0.21505  B =     0.01574  C =      0.01491 [cm^-1] 
+    Rotor Type: SYMMETRIC 
+
+	-Nuclear Dipole Moment: (e a0)  
+	 X:  -14.24146   Y:  -2.61277   Z:  -0.00136   Total:  14.47915 
+
+	-Nuclear Dipole Moment: (D)  
+	 X:  -36.19819   Y:  -6.64100   Z:  -0.00347   Total:  36.80233 
+
+
+    Nuclear repulsion energy (V_NN)              : 447.437047746382 
+   =====================================================
+   Charge                : 0 
+   Multiplicity          : 1 
+   Number of Atoms       : 23 
+   Number of Ghost Atoms : 0 
+   Number of Electrons   : 72 
+   Number of alpha occupied orbitals (NoccA)  : 36 
+   Number of beta occupied orbitals (NoccB)   : 36 
+   Number of singly occupied orbitals (Nsocc) : 0 
+   Number of doubly occupied orbitals (Ndocc) : 36 
+   =====================================================
+
+
+
+  ## GLOBALS Options ##
+
+  | TYPE         | KEY                      | INPUT? | VALUE              | DEFAULT            
+  |--------------|--------------------------|--------|--------------------|--------------------
+  | BOOL         | ERI_DISK                 | NO     | FALSE              | FALSE              
+  | BOOL         | FREEZE_CORE              | NO     | TRUE               | TRUE               
+  | BOOL         | MOL_FRAG                 | NO     | FALSE              | FALSE              
+  | BOOL         | NOCOM                    | NO     | FALSE              | FALSE              
+  | BOOL         | NOREORIENT               | NO     | TRUE               | TRUE               
+  | BOOL         | PUREAM                   | NO     | TRUE               | TRUE               
+  | BOOL         | ML                       | NO     | FALSE              | FALSE              
+  | BOOL         | READ_PDB                 | NO     | FALSE              | FALSE              
+  | BOOL         | TEST_MODE                | NO     | FALSE              | FALSE              
+  | INT          | DERIVE_LEVEL             | NO     | 0                  | 0                  
+  | INT          | FINDIF_POINTS            | NO     | 3                  | 3                  
+  | INT          | MEMORY                   | YES    | 30000              | 2000               
+  | INT          | NUM_THREADS              | NO     | 1                  | 1                  
+  | INT          | NUM_FROZEN_DOCC          | NO     | 0                  | 0                  
+  | INT          | NUM_FROZEN_VIR           | NO     | 0                  | 0                  
+  | INT          | PRINT_LEVEL              | NO     | 0                  | 0                  
+  | STRING       | AUX_BASIS_CORR           | NO     | CC-PVDZ-RI         | CC-PVDZ-RI         
+  | STRING       | AUX_BASIS_SCF            | NO     | CC-PVDZ-JKFIT      | CC-PVDZ-JKFIT      
+  | STRING       | BASIS                    | YES    | CC-PVDZ            | CC-PVDZ            
+  | STRING       | BASIS2                   | NO     | MINAO              | MINAO              
+  | STRING       | DERIVE_TYPE              | NO     | ANALYTIC           | ANALYTIC           
+  | STRING       | FINDIF_METHOD            | NO     | GRAD               | GRAD               
+  | STRING       | GEOM_UNITS               | NO     | ANG                | ANG                
+  | STRING       | JOBTYPE                  | YES    | ENERGY             | ENERGY             
+  | STRING       | METHOD                   | YES    | MP2                | SCF                
+  | STRING       | REFERENCE                | YES    | RHF                | RHF                
+  | STRING       | OUTFILE_MODE             | NO     | NEW                | NEW                
+  | DOUBLE       | STEP_BOHR                | NO     | 0.05               | 0.05               
+  | STR_ARRAY    | MOLECULE_GEOM_FROM       | NO     | [input]            | [input]            
+  | DOUBLE_ARRAY | ELECTRIC_STRENGTH        | NO     | [0.001;0.001;0.001]| [0.001;0.001;0.001]
+  | STRING       | ELECTRIC_FIELD           | NO     | NONE               | NONE               
+  | STRING       | ALIGN_TWO_ATOMS          | NO     | NONE               | NONE               
+  | INT_ARRAY    | TWO_ATOMS                | NO     | [0]                | [0]                
+
+
+
+  ## INTS Options ##
+
+  | TYPE         | KEY                      | INPUT? | VALUE              | DEFAULT            
+  |--------------|--------------------------|--------|--------------------|--------------------
+  | DOUBLE       | BOYS_CUTOFF              | NO     | 1e-15              | 1e-15              
+  | DOUBLE       | BOYS_ZERO                | NO     | 1e-06              | 1e-06              
+  | DOUBLE       | DELTA_X                  | NO     | 0.1                | 0.1                
+  | DOUBLE       | INTEGRAL_CUTOFF          | NO     | 1e-10              | 1e-10              
+  | DOUBLE       | X_MAX                    | NO     | 30.0               | 30.0               
+  | INT          | BOYS_MAXITER             | NO     | 10000              | 10000              
+  | INT          | MAX_AM                   | NO     | 7                  | 7                  
+  | INT          | MAX_AM_AUX               | NO     | 7                  | 7                  
+  | INT          | PRINT_LEVEL              | NO     | 0                  | 0                  
+  | INT          | TAYLOR_ORDER             | NO     | 6                  | 6                  
+  | STRING       | 3INDEX_ALGORITHM         | NO     | AUTO               | AUTO               
+  | STRING       | BOYS_METHOD              | NO     | GHP                | GHP                
+  | STRING       | ERI_ALGORITHM            | NO     | MD4                | MD4                
+
+
+	Initializing Liboeprop (by U. Bozkaya) ...
+
+	*=================================================================*
+	*                  SCF                                            *
+	*   Developed by U. Bozkaya & Y. Alagoz                           *
+	*   Latest revision Feb 16, 2021                                  *
+	*=================================================================*
+
+
+
+  ## SCF Options ##
+
+  | TYPE         | KEY                      | INPUT? | VALUE              | DEFAULT            
+  |--------------|--------------------------|--------|--------------------|--------------------
+  | BOOL         | DIIS_DAMP                | NO     | FALSE              | FALSE              
+  | BOOL         | DIE_IF_NOT_CONVERGED     | NO     | TRUE               | TRUE               
+  | BOOL         | DO_DF                    | NO     | TRUE               | TRUE               
+  | BOOL         | DIIS                     | NO     | TRUE               | TRUE               
+  | BOOL         | FOCK_DAMP                | NO     | FALSE              | FALSE              
+  | BOOL         | GUESS_MIX                | NO     | FALSE              | FALSE              
+  | BOOL         | GUESS_PREVIOUS           | NO     | FALSE              | FALSE              
+  | BOOL         | LOCAL                    | NO     | FALSE              | FALSE              
+  | BOOL         | RETRY                    | NO     | TRUE               | TRUE               
+  | DOUBLE       | CUTOFF                   | NO     | 1e-10              | 1e-10              
+  | DOUBLE       | D_CONVERGENCE            | YES    | 1e-06              | 1e-06              
+  | DOUBLE       | DAMP_PARAM               | NO     | 0.02               | 0.02               
+  | DOUBLE       | E_CONVERGENCE            | YES    | 1e-08              | 1e-08              
+  | DOUBLE       | FOCK_DAMP_PERC           | NO     | 20.0               | 20.0               
+  | DOUBLE       | MIN_OVERLAP_EIGVAL       | NO     | 1e-06              | 1e-06              
+  | DOUBLE       | LOCAL_CONVERGENCE        | NO     | 1e-08              | 1e-08              
+  | DOUBLE       | QC_GUESS_E_CONVERGENCE   | NO     | 0.0001             | 0.0001             
+  | DOUBLE       | QC_GUESS_D_CONVERGENCE   | NO     | 0.005              | 0.005              
+  | INT          | MAX_DIIS                 | NO     | 6                  | 6                  
+  | INT          | MIN_DIIS                 | NO     | 2                  | 2                  
+  | INT          | PRINT_LEVEL              | NO     | 0                  | 0                  
+  | INT          | SCF_MAXITER              | NO     | 50                 | 50                 
+  | INT          | LOCAL_MAXITER            | NO     | 50                 | 50                 
+  | STRING       | DIIS_ALGORITHM           | NO     | DISK               | DISK               
+  | STRING       | GUESS                    | YES    | SAD                | SAD                
+  | BOOL         | MO_WRITE                 | NO     | FALSE              | FALSE              
+  | BOOL         | FOCK_WRITE               | NO     | FALSE              | FALSE              
+  | STRING       | ORTH_TYPE                | NO     | CANONICAL          | CANONICAL          
+  | STRING       | ROHF_CANONIC_TYPE        | NO     | GUEST              | GUEST              
+  | STRING       | ERI                      | NO     | INCORE             | INCORE             
+  | STRING       | SCF_ALGORITHM            | NO     | ROOTHAAN           | ROOTHAAN           
+  | STRING       | LOCAL_TYPE               | NO     | BOYS               | BOYS               
+  | BOOL         | SAD_FRAC_OCC             | NO     | TRUE               | TRUE               
+  | BOOL         | SAD_SPIN_AVERAGE         | NO     | TRUE               | TRUE               
+  | DOUBLE       | SAD_E_CONVERGENCE        | NO     | 1e-05              | 1e-05              
+  | DOUBLE       | SAD_D_CONVERGENCE        | NO     | 1e-05              | 1e-05              
+  | INT          | SAD_MAXITER              | NO     | 50                 | 50                 
+  | BOOL         | NIE                      | NO     | FALSE              | FALSE              
+  | BOOL         | SAD_DIIS                 | NO     | TRUE               | TRUE               
+  | INT          | SAD_MAX_DIIS             | NO     | 6                  | 6                  
+  | INT          | SAD_MIN_DIIS             | NO     | 2                  | 2                  
+  | INT          | SAD_PRINT                | NO     | 0                  | 0                  
+  | STRING       | SAD_AUX_BASIS            | NO     | SAD-FIT            | SAD-FIT            
+  | DOUBLE       | SAD_CHOLESKY_TOLERANCE   | NO     | 1e-07              | 1e-07              
+  | BOOL         | SOLVATION                | YES    | TRUE               | FALSE              
+  | BOOL         | BYPASS                   | NO     | FALSE              | FALSE              
+  | STRING       | IAO_TYPE                 | NO     | STANDARD2013       | STANDARD2013       
+  | BOOL         | USE_IAOS                 | NO     | FALSE              | FALSE              
+
+	Initializing libdiis ...
+	Initializing libmolint 1.1 ...
+ CC-PVDZ primary basis set file will be read for the O atom...
+ CC-PVDZ primary basis set file will be read for the C atom...
+ CC-PVDZ primary basis set file will be read for the H atom...
+ Nmaxthread: 20 
+ Nshell: 96 
+ Lmax:  2 
+ Npmax:  8 
+ Nao: 196 
+ Ndocc: 36 
+ Nsocc:  0 
+ NoccA: 36 
+ NoccB: 36 
+ Primary basis set info has been read.
+
+ CC-PVDZ-JKFIT aux basis set file will be read for the O atom...
+ CC-PVDZ-JKFIT aux basis set file will be read for the C atom...
+ CC-PVDZ-JKFIT aux basis set file will be read for the H atom...
+ Nshell_aux: 342 
+ Naux: 952 
+ Aux basis set info has been read.
+
+ orth_type: CANONICAL 
+ Cpu time for S ints :       0.0500 s
+ Wall time for S ints:       0.0509 s
+
+ Using canonical orthogonalization. 
+ Minimum eigenvalue in the overlap matrix is:   2.0768E-03 
+
+ Cpu time for T ints :       0.3800 s
+ Wall time for T ints:       0.0964 s
+ Cpu time for V ints :       1.5300 s
+ Wall time for V ints:       0.9535 s
+ Cpu time for Metric ints :       2.5800 s
+ Wall time for Metric ints:       0.8330 s
+ 3-Index Algorithm: AUTO 
+
+ Calling fortran integrals: ringing... 
+ Done with fintegrals.
+
+ Cpu time for 3-index ints :      12.6900 s
+ Wall time for 3-index ints:       4.5265 s
+ Cpu time for df-factors :       4.8100 s
+ Wall time for df-factors:       1.2447 s
+
+
+ Puream (True=1, False=0) : 1
+ Number of AO             : 196
+ Number of MO             : 196
+ Number of Aux Functions  : 952
+ Charge                   : 0
+ Multiplicity             : 1
+ Alpha OCC                : 36
+ Beta OCC                 : 36
+ Nuclear Repulsion Energy : 447.43704775
+ Energy Treshold          : 1.0e-08
+ Density Treshold         : 1.0e-06
+ Iteration Limit          : 50
+ Guess                    : SAD
+ Guess Mix                : false
+ Diis                     : true
+ Diis Damping             : false
+ Diis Damp Parameter      : 0.02
+ Diis Algorithm           : DISK
+ Cutoff Treshold          : 1.0e-10
+ Density Fitting          : true
+ Reference                : RHF
+ Die If Not Converged     : true
+ Print Level              : 0
+ ERI Algorithm            : INCORE
+ SCF Algorithm            : ROOTHAAN
+
+
+
+
+  ## SOLVATION Options ##
+
+  | TYPE         | KEY                      | INPUT? | VALUE              | DEFAULT            
+  |--------------|--------------------------|--------|--------------------|--------------------
+  | INT          | NUM_Z_POINTS             | NO     | 90                 | 90                 
+  | INT          | NUM_ANG_POINTS           | YES    | 100                | 100                
+  | STRING       | SASA_TYPE                | YES    | NUMERIC            | NUMERIC            
+  | STRING       | CHARGE_TYPE              | YES    | IAO_MULLIKEN       | IAO_MULLIKEN       
+  | STRING       | CDS_TYPE                 | YES    | SMD                | SMD                
+  | STRING       | SOLVENT                  | YES    | WATER              | WATER              
+  | STRING       | SOLVENT_PARAMS           | YES    | MN21               | SM8                
+  | STRING       | DIELECTRIC_PARAMS        | YES    | MN21               | MN21               
+  | STRING       | COULOMB_RADII            | YES    | SMD                | SMD                
+  | DOUBLE       | COVALENT_VW_CONST        | NO     | 0.76               | 0.76               
+  | DOUBLE       | SOLVENT_RADIUS           | NO     | 0.4                | 0.4                
+  | STRING       | RADIUS_TYPE              | YES    | SMD                | SMD                
+  | DOUBLE       | GB_DIJ                   | NO     | 3.7                | 3.7                
+  | DOUBLE       | GB_SIJ                   | NO     | 0.75               | 0.75               
+  | DOUBLE       | GB_CIJ                   | NO     | 0.0                | 0.0                
+  | DOUBLE       | F_PWSASA                 | NO     | 0.4535             | 0.4535             
+  | DOUBLE       | SCALE_VDW                | NO     | 1.0                | 1.0                
+  | DOUBLE       | SCALE_CR                 | NO     | 1.0                | 1.0                
+
+
+
+ Sasa Type                  : NUMERIC 
+ Charge Type                : IAO_MULLIKEN 
+ CDS Type                   : SMD 
+ Radius Type                : SMD 
+ Solvent                    : WATER 
+ Solvent Parameters         : MN21 
+ Dielectric Parameters      : MN21 
+ Coulomb Radii Parameters   : SMD 
+ GB d_ij parameter          : 3.7000000000 
+ GB S_ij parameter          : 0.7500000000 
+ GB C_ij parameter          : 0.0000000000 
+ Sclae_vdw parameter        : 1.0000000000 
+ Number of z-points         : 90 
+ Number of angular points   : 100 
+ Number of SASA grid points : 17902 
+ Solvent Dielectric Constant: 78.3553000000 
+
+ VDW Radii:
+	  1 O :       1.5200  ang
+	  2 O :       1.5200  ang
+	  3 C :       1.7000  ang
+	  4 C :       1.7000  ang
+	  5 C :       1.7000  ang
+	  6 C :       1.7000  ang
+	  7 C :       1.7000  ang
+	  8 C :       1.7000  ang
+	  9 C :       1.7000  ang
+	 10 H :       1.2000  ang
+	 11 H :       1.2000  ang
+	 12 H :       1.2000  ang
+	 13 H :       1.2000  ang
+	 14 H :       1.2000  ang
+	 15 H :       1.2000  ang
+	 16 H :       1.2000  ang
+	 17 H :       1.2000  ang
+	 18 H :       1.2000  ang
+	 19 H :       1.2000  ang
+	 20 H :       1.2000  ang
+	 21 H :       1.2000  ang
+	 22 H :       1.2000  ang
+	 23 H :       1.2000  ang
+
+	 Computing SASA... 
+
+ Atomic SASA values:
+	  1 O :      10.8010  ang^2
+	  2 O :      22.7121  ang^2
+	  3 C :       2.7613  ang^2
+	  4 C :       2.7799  ang^2
+	  5 C :       3.5538  ang^2
+	  6 C :       3.0275  ang^2
+	  7 C :       8.9866  ang^2
+	  8 C :       7.3304  ang^2
+	  9 C :       9.7729  ang^2
+	 10 H :      10.9114  ang^2
+	 11 H :      10.9024  ang^2
+	 12 H :      11.4469  ang^2
+	 13 H :      11.4397  ang^2
+	 14 H :      11.6895  ang^2
+	 15 H :      11.6859  ang^2
+	 16 H :      10.7856  ang^2
+	 17 H :      10.7982  ang^2
+	 18 H :      12.0938  ang^2
+	 19 H :      12.0902  ang^2
+	 20 H :      12.9312  ang^2
+	 21 H :      12.6275  ang^2
+	 22 H :      12.6078  ang^2
+	 23 H :      12.4191  ang^2
+
+	*Total SASA (angs^2): 236.1544964684 
+
+
+ Coulomb Radii:
+	  1 O :       1.5200  ang
+	  2 O :       1.5200  ang
+	  3 C :       1.8500  ang
+	  4 C :       1.8500  ang
+	  5 C :       1.8500  ang
+	  6 C :       1.8500  ang
+	  7 C :       1.8500  ang
+	  8 C :       1.8500  ang
+	  9 C :       1.8500  ang
+	 10 H :       1.2000  ang
+	 11 H :       1.2000  ang
+	 12 H :       1.2000  ang
+	 13 H :       1.2000  ang
+	 14 H :       1.2000  ang
+	 15 H :       1.2000  ang
+	 16 H :       1.2000  ang
+	 17 H :       1.2000  ang
+	 18 H :       1.2000  ang
+	 19 H :       1.2000  ang
+	 20 H :       1.2000  ang
+	 21 H :       1.2000  ang
+	 22 H :       1.2000  ang
+	 23 H :       1.2000  ang
+ Solvent Alpha                       : 1.1700000000 
+
+ ## Effective Born Radius (bohr) ##
+   0   4.3355160224 
+   1   3.6673506413 
+   2   4.6116855314 
+   3   4.5494527143 
+   4   4.4005844998 
+   5   4.4782545187 
+   6   4.0373700914 
+   7   4.2694576558 
+   8   3.9084835459 
+   9   3.6429471228 
+  10   3.6431305422 
+  11   3.5718218232 
+  12   3.5720685178 
+  13   3.4901423558 
+  14   3.4901159857 
+  15   3.5397103801 
+  16   3.5390439656 
+  17   3.2111770681 
+  18   3.2111139462 
+  19   3.1194241487 
+  20   3.1198477065 
+  21   3.1202089702 
+  22   3.1054966210 
+
+ Effective Born Radii:
+	  1 O :       2.2943  ang
+	  2 O :       1.9407  ang
+	  3 C :       2.4404  ang
+	  4 C :       2.4075  ang
+	  5 C :       2.3287  ang
+	  6 C :       2.3698  ang
+	  7 C :       2.1365  ang
+	  8 C :       2.2593  ang
+	  9 C :       2.0683  ang
+	 10 H :       1.9278  ang
+	 11 H :       1.9279  ang
+	 12 H :       1.8901  ang
+	 13 H :       1.8903  ang
+	 14 H :       1.8469  ang
+	 15 H :       1.8469  ang
+	 16 H :       1.8731  ang
+	 17 H :       1.8728  ang
+	 18 H :       1.6993  ang
+	 19 H :       1.6992  ang
+	 20 H :       1.6507  ang
+	 21 H :       1.6510  ang
+	 22 H :       1.6511  ang
+	 23 H :       1.6434  ang
+
+
+ Coulomb Integrals:
+	  1  1 :       0.2307  bohr^-1
+	  1  2 :       0.1814  bohr^-1
+	  1  3 :       0.1284  bohr^-1
+	  1  4 :       0.1681  bohr^-1
+	  1  5 :       0.1043  bohr^-1
+	  1  6 :       0.2005  bohr^-1
+	  1  7 :       0.0842  bohr^-1
+	  1  8 :       0.2066  bohr^-1
+	  1  9 :       0.1768  bohr^-1
+	  1 10 :       0.1243  bohr^-1
+	  1 11 :       0.1243  bohr^-1
+	  1 12 :       0.1700  bohr^-1
+	  1 13 :       0.1700  bohr^-1
+	  1 14 :       0.1033  bohr^-1
+	  1 15 :       0.1033  bohr^-1
+	  1 16 :       0.1921  bohr^-1
+	  1 17 :       0.1922  bohr^-1
+	  1 18 :       0.0817  bohr^-1
+	  1 19 :       0.0817  bohr^-1
+	  1 20 :       0.0748  bohr^-1
+	  1 21 :       0.1746  bohr^-1
+	  1 22 :       0.1747  bohr^-1
+	  1 23 :       0.1497  bohr^-1
+	  2  1 :       0.1814  bohr^-1
+	  2  2 :       0.2727  bohr^-1
+	  2  3 :       0.1014  bohr^-1
+	  2  4 :       0.1209  bohr^-1
+	  2  5 :       0.0805  bohr^-1
+	  2  6 :       0.1658  bohr^-1
+	  2  7 :       0.0695  bohr^-1
+	  2  8 :       0.2258  bohr^-1
+	  2  9 :       0.1812  bohr^-1
+	  2 10 :       0.1024  bohr^-1
+	  2 11 :       0.1025  bohr^-1
+	  2 12 :       0.1134  bohr^-1
+	  2 13 :       0.1134  bohr^-1
+	  2 14 :       0.0775  bohr^-1
+	  2 15 :       0.0776  bohr^-1
+	  2 16 :       0.1748  bohr^-1
+	  2 17 :       0.1747  bohr^-1
+	  2 18 :       0.0692  bohr^-1
+	  2 19 :       0.0692  bohr^-1
+	  2 20 :       0.0616  bohr^-1
+	  2 21 :       0.1592  bohr^-1
+	  2 22 :       0.1591  bohr^-1
+	  2 23 :       0.1831  bohr^-1
+	  3  1 :       0.1284  bohr^-1
+	  3  2 :       0.1014  bohr^-1
+	  3  3 :       0.2168  bohr^-1
+	  3  4 :       0.1918  bohr^-1
+	  3  5 :       0.1942  bohr^-1
+	  3  6 :       0.1620  bohr^-1
+	  3  7 :       0.1665  bohr^-1
+	  3  8 :       0.1050  bohr^-1
+	  3  9 :       0.0859  bohr^-1
+	  3 10 :       0.2238  bohr^-1
+	  3 11 :       0.2237  bohr^-1
+	  3 12 :       0.1848  bohr^-1
+	  3 13 :       0.1848  bohr^-1
+	  3 14 :       0.1861  bohr^-1
+	  3 15 :       0.1862  bohr^-1
+	  3 16 :       0.1624  bohr^-1
+	  3 17 :       0.1624  bohr^-1
+	  3 18 :       0.1653  bohr^-1
+	  3 19 :       0.1653  bohr^-1
+	  3 20 :       0.1422  bohr^-1
+	  3 21 :       0.0841  bohr^-1
+	  3 22 :       0.0842  bohr^-1
+	  3 23 :       0.0758  bohr^-1
+	  4  1 :       0.1681  bohr^-1
+	  4  2 :       0.1209  bohr^-1
+	  4  3 :       0.1918  bohr^-1
+	  4  4 :       0.2198  bohr^-1
+	  4  5 :       0.1634  bohr^-1
+	  4  6 :       0.1941  bohr^-1
+	  4  7 :       0.1270  bohr^-1
+	  4  8 :       0.1318  bohr^-1
+	  4  9 :       0.1085  bohr^-1
+	  4 10 :       0.1848  bohr^-1
+	  4 11 :       0.1848  bohr^-1
+	  4 12 :       0.2269  bohr^-1
+	  4 13 :       0.2269  bohr^-1
+	  4 14 :       0.1641  bohr^-1
+	  4 15 :       0.1641  bohr^-1
+	  4 16 :       0.1861  bohr^-1
+	  4 17 :       0.1861  bohr^-1
+	  4 18 :       0.1217  bohr^-1
+	  4 19 :       0.1217  bohr^-1
+	  4 20 :       0.1109  bohr^-1
+	  4 21 :       0.1074  bohr^-1
+	  4 22 :       0.1075  bohr^-1
+	  4 23 :       0.0927  bohr^-1
+	  5  1 :       0.1043  bohr^-1
+	  5  2 :       0.0805  bohr^-1
+	  5  3 :       0.1942  bohr^-1
+	  5  4 :       0.1634  bohr^-1
+	  5  5 :       0.2272  bohr^-1
+	  5  6 :       0.1257  bohr^-1
+	  5  7 :       0.2044  bohr^-1
+	  5  8 :       0.0852  bohr^-1
+	  5  9 :       0.0729  bohr^-1
+	  5 10 :       0.1865  bohr^-1
+	  5 11 :       0.1865  bohr^-1
+	  5 12 :       0.1643  bohr^-1
+	  5 13 :       0.1644  bohr^-1
+	  5 14 :       0.2323  bohr^-1
+	  5 15 :       0.2323  bohr^-1
+	  5 16 :       0.1213  bohr^-1
+	  5 17 :       0.1213  bohr^-1
+	  5 18 :       0.1923  bohr^-1
+	  5 19 :       0.1923  bohr^-1
+	  5 20 :       0.1941  bohr^-1
+	  5 21 :       0.0724  bohr^-1
+	  5 22 :       0.0725  bohr^-1
+	  5 23 :       0.0646  bohr^-1
+	  6  1 :       0.2005  bohr^-1
+	  6  2 :       0.1658  bohr^-1
+	  6  3 :       0.1620  bohr^-1
+	  6  4 :       0.1941  bohr^-1
+	  6  5 :       0.1257  bohr^-1
+	  6  6 :       0.2233  bohr^-1
+	  6  7 :       0.1023  bohr^-1
+	  6  8 :       0.1711  bohr^-1
+	  6  9 :       0.1333  bohr^-1
+	  6 10 :       0.1632  bohr^-1
+	  6 11 :       0.1632  bohr^-1
+	  6 12 :       0.1868  bohr^-1
+	  6 13 :       0.1868  bohr^-1
+	  6 14 :       0.1216  bohr^-1
+	  6 15 :       0.1216  bohr^-1
+	  6 16 :       0.2293  bohr^-1
+	  6 17 :       0.2293  bohr^-1
+	  6 18 :       0.1005  bohr^-1
+	  6 19 :       0.1005  bohr^-1
+	  6 20 :       0.0882  bohr^-1
+	  6 21 :       0.1280  bohr^-1
+	  6 22 :       0.1281  bohr^-1
+	  6 23 :       0.1157  bohr^-1
+	  7  1 :       0.0842  bohr^-1
+	  7  2 :       0.0695  bohr^-1
+	  7  3 :       0.1665  bohr^-1
+	  7  4 :       0.1270  bohr^-1
+	  7  5 :       0.2044  bohr^-1
+	  7  6 :       0.1023  bohr^-1
+	  7  7 :       0.2477  bohr^-1
+	  7  8 :       0.0715  bohr^-1
+	  7  9 :       0.0616  bohr^-1
+	  7 10 :       0.1667  bohr^-1
+	  7 11 :       0.1667  bohr^-1
+	  7 12 :       0.1224  bohr^-1
+	  7 13 :       0.1225  bohr^-1
+	  7 14 :       0.1934  bohr^-1
+	  7 15 :       0.1934  bohr^-1
+	  7 16 :       0.1007  bohr^-1
+	  7 17 :       0.1007  bohr^-1
+	  7 18 :       0.2489  bohr^-1
+	  7 19 :       0.2489  bohr^-1
+	  7 20 :       0.2518  bohr^-1
+	  7 21 :       0.0609  bohr^-1
+	  7 22 :       0.0610  bohr^-1
+	  7 23 :       0.0558  bohr^-1
+	  8  1 :       0.2066  bohr^-1
+	  8  2 :       0.2258  bohr^-1
+	  8  3 :       0.1050  bohr^-1
+	  8  4 :       0.1318  bohr^-1
+	  8  5 :       0.0852  bohr^-1
+	  8  6 :       0.1711  bohr^-1
+	  8  7 :       0.0715  bohr^-1
+	  8  8 :       0.2342  bohr^-1
+	  8  9 :       0.2100  bohr^-1
+	  8 10 :       0.1035  bohr^-1
+	  8 11 :       0.1035  bohr^-1
+	  8 12 :       0.1288  bohr^-1
+	  8 13 :       0.1288  bohr^-1
+	  8 14 :       0.0834  bohr^-1
+	  8 15 :       0.0834  bohr^-1
+	  8 16 :       0.1707  bohr^-1
+	  8 17 :       0.1707  bohr^-1
+	  8 18 :       0.0703  bohr^-1
+	  8 19 :       0.0703  bohr^-1
+	  8 20 :       0.0639  bohr^-1
+	  8 21 :       0.1968  bohr^-1
+	  8 22 :       0.1968  bohr^-1
+	  8 23 :       0.1973  bohr^-1
+	  9  1 :       0.1768  bohr^-1
+	  9  2 :       0.1812  bohr^-1
+	  9  3 :       0.0859  bohr^-1
+	  9  4 :       0.1085  bohr^-1
+	  9  5 :       0.0729  bohr^-1
+	  9  6 :       0.1333  bohr^-1
+	  9  7 :       0.0616  bohr^-1
+	  9  8 :       0.2100  bohr^-1
+	  9  9 :       0.2559  bohr^-1
+	  9 10 :       0.0833  bohr^-1
+	  9 11 :       0.0833  bohr^-1
+	  9 12 :       0.1087  bohr^-1
+	  9 13 :       0.1087  bohr^-1
+	  9 14 :       0.0725  bohr^-1
+	  9 15 :       0.0725  bohr^-1
+	  9 16 :       0.1273  bohr^-1
+	  9 17 :       0.1273  bohr^-1
+	  9 18 :       0.0603  bohr^-1
+	  9 19 :       0.0603  bohr^-1
+	  9 20 :       0.0563  bohr^-1
+	  9 21 :       0.2552  bohr^-1
+	  9 22 :       0.2552  bohr^-1
+	  9 23 :       0.2556  bohr^-1
+	 10  1 :       0.1243  bohr^-1
+	 10  2 :       0.1024  bohr^-1
+	 10  3 :       0.2238  bohr^-1
+	 10  4 :       0.1848  bohr^-1
+	 10  5 :       0.1865  bohr^-1
+	 10  6 :       0.1632  bohr^-1
+	 10  7 :       0.1667  bohr^-1
+	 10  8 :       0.1035  bohr^-1
+	 10  9 :       0.0833  bohr^-1
+	 10 10 :       0.2745  bohr^-1
+	 10 11 :       0.2146  bohr^-1
+	 10 12 :       0.1803  bohr^-1
+	 10 13 :       0.1578  bohr^-1
+	 10 14 :       0.1815  bohr^-1
+	 10 15 :       0.1585  bohr^-1
+	 10 16 :       0.1564  bohr^-1
+	 10 17 :       0.1789  bohr^-1
+	 10 18 :       0.1584  bohr^-1
+	 10 19 :       0.1819  bohr^-1
+	 10 20 :       0.1364  bohr^-1
+	 10 21 :       0.0822  bohr^-1
+	 10 22 :       0.0793  bohr^-1
+	 10 23 :       0.0742  bohr^-1
+	 11  1 :       0.1243  bohr^-1
+	 11  2 :       0.1025  bohr^-1
+	 11  3 :       0.2237  bohr^-1
+	 11  4 :       0.1848  bohr^-1
+	 11  5 :       0.1865  bohr^-1
+	 11  6 :       0.1632  bohr^-1
+	 11  7 :       0.1667  bohr^-1
+	 11  8 :       0.1035  bohr^-1
+	 11  9 :       0.0833  bohr^-1
+	 11 10 :       0.2146  bohr^-1
+	 11 11 :       0.2745  bohr^-1
+	 11 12 :       0.1578  bohr^-1
+	 11 13 :       0.1803  bohr^-1
+	 11 14 :       0.1585  bohr^-1
+	 11 15 :       0.1815  bohr^-1
+	 11 16 :       0.1790  bohr^-1
+	 11 17 :       0.1565  bohr^-1
+	 11 18 :       0.1819  bohr^-1
+	 11 19 :       0.1584  bohr^-1
+	 11 20 :       0.1364  bohr^-1
+	 11 21 :       0.0792  bohr^-1
+	 11 22 :       0.0822  bohr^-1
+	 11 23 :       0.0743  bohr^-1
+	 12  1 :       0.1700  bohr^-1
+	 12  2 :       0.1134  bohr^-1
+	 12  3 :       0.1848  bohr^-1
+	 12  4 :       0.2269  bohr^-1
+	 12  5 :       0.1643  bohr^-1
+	 12  6 :       0.1868  bohr^-1
+	 12  7 :       0.1224  bohr^-1
+	 12  8 :       0.1288  bohr^-1
+	 12  9 :       0.1087  bohr^-1
+	 12 10 :       0.1803  bohr^-1
+	 12 11 :       0.1578  bohr^-1
+	 12 12 :       0.2800  bohr^-1
+	 12 13 :       0.2179  bohr^-1
+	 12 14 :       0.1809  bohr^-1
+	 12 15 :       0.1581  bohr^-1
+	 12 16 :       0.1587  bohr^-1
+	 12 17 :       0.1821  bohr^-1
+	 12 18 :       0.1106  bohr^-1
+	 12 19 :       0.1185  bohr^-1
+	 12 20 :       0.1084  bohr^-1
+	 12 21 :       0.1125  bohr^-1
+	 12 22 :       0.1056  bohr^-1
+	 12 23 :       0.0913  bohr^-1
+	 13  1 :       0.1700  bohr^-1
+	 13  2 :       0.1134  bohr^-1
+	 13  3 :       0.1848  bohr^-1
+	 13  4 :       0.2269  bohr^-1
+	 13  5 :       0.1644  bohr^-1
+	 13  6 :       0.1868  bohr^-1
+	 13  7 :       0.1225  bohr^-1
+	 13  8 :       0.1288  bohr^-1
+	 13  9 :       0.1087  bohr^-1
+	 13 10 :       0.1578  bohr^-1
+	 13 11 :       0.1803  bohr^-1
+	 13 12 :       0.2179  bohr^-1
+	 13 13 :       0.2799  bohr^-1
+	 13 14 :       0.1582  bohr^-1
+	 13 15 :       0.1809  bohr^-1
+	 13 16 :       0.1821  bohr^-1
+	 13 17 :       0.1587  bohr^-1
+	 13 18 :       0.1185  bohr^-1
+	 13 19 :       0.1106  bohr^-1
+	 13 20 :       0.1084  bohr^-1
+	 13 21 :       0.1054  bohr^-1
+	 13 22 :       0.1126  bohr^-1
+	 13 23 :       0.0913  bohr^-1
+	 14  1 :       0.1033  bohr^-1
+	 14  2 :       0.0775  bohr^-1
+	 14  3 :       0.1861  bohr^-1
+	 14  4 :       0.1641  bohr^-1
+	 14  5 :       0.2323  bohr^-1
+	 14  6 :       0.1216  bohr^-1
+	 14  7 :       0.1934  bohr^-1
+	 14  8 :       0.0834  bohr^-1
+	 14  9 :       0.0725  bohr^-1
+	 14 10 :       0.1815  bohr^-1
+	 14 11 :       0.1585  bohr^-1
+	 14 12 :       0.1809  bohr^-1
+	 14 13 :       0.1582  bohr^-1
+	 14 14 :       0.2865  bohr^-1
+	 14 15 :       0.2201  bohr^-1
+	 14 16 :       0.1105  bohr^-1
+	 14 17 :       0.1185  bohr^-1
+	 14 18 :       0.1611  bohr^-1
+	 14 19 :       0.1860  bohr^-1
+	 14 20 :       0.1884  bohr^-1
+	 14 21 :       0.0736  bohr^-1
+	 14 22 :       0.0715  bohr^-1
+	 14 23 :       0.0639  bohr^-1
+	 15  1 :       0.1033  bohr^-1
+	 15  2 :       0.0776  bohr^-1
+	 15  3 :       0.1862  bohr^-1
+	 15  4 :       0.1641  bohr^-1
+	 15  5 :       0.2323  bohr^-1
+	 15  6 :       0.1216  bohr^-1
+	 15  7 :       0.1934  bohr^-1
+	 15  8 :       0.0834  bohr^-1
+	 15  9 :       0.0725  bohr^-1
+	 15 10 :       0.1585  bohr^-1
+	 15 11 :       0.1815  bohr^-1
+	 15 12 :       0.1581  bohr^-1
+	 15 13 :       0.1809  bohr^-1
+	 15 14 :       0.2201  bohr^-1
+	 15 15 :       0.2865  bohr^-1
+	 15 16 :       0.1185  bohr^-1
+	 15 17 :       0.1105  bohr^-1
+	 15 18 :       0.1860  bohr^-1
+	 15 19 :       0.1611  bohr^-1
+	 15 20 :       0.1884  bohr^-1
+	 15 21 :       0.0714  bohr^-1
+	 15 22 :       0.0736  bohr^-1
+	 15 23 :       0.0639  bohr^-1
+	 16  1 :       0.1921  bohr^-1
+	 16  2 :       0.1748  bohr^-1
+	 16  3 :       0.1624  bohr^-1
+	 16  4 :       0.1861  bohr^-1
+	 16  5 :       0.1213  bohr^-1
+	 16  6 :       0.2293  bohr^-1
+	 16  7 :       0.1007  bohr^-1
+	 16  8 :       0.1707  bohr^-1
+	 16  9 :       0.1273  bohr^-1
+	 16 10 :       0.1564  bohr^-1
+	 16 11 :       0.1790  bohr^-1
+	 16 12 :       0.1587  bohr^-1
+	 16 13 :       0.1821  bohr^-1
+	 16 14 :       0.1105  bohr^-1
+	 16 15 :       0.1185  bohr^-1
+	 16 16 :       0.2825  bohr^-1
+	 16 17 :       0.2169  bohr^-1
+	 16 18 :       0.1028  bohr^-1
+	 16 19 :       0.0972  bohr^-1
+	 16 20 :       0.0857  bohr^-1
+	 16 21 :       0.1148  bohr^-1
+	 16 22 :       0.1241  bohr^-1
+	 16 23 :       0.1122  bohr^-1
+	 17  1 :       0.1922  bohr^-1
+	 17  2 :       0.1747  bohr^-1
+	 17  3 :       0.1624  bohr^-1
+	 17  4 :       0.1861  bohr^-1
+	 17  5 :       0.1213  bohr^-1
+	 17  6 :       0.2293  bohr^-1
+	 17  7 :       0.1007  bohr^-1
+	 17  8 :       0.1707  bohr^-1
+	 17  9 :       0.1273  bohr^-1
+	 17 10 :       0.1789  bohr^-1
+	 17 11 :       0.1565  bohr^-1
+	 17 12 :       0.1821  bohr^-1
+	 17 13 :       0.1587  bohr^-1
+	 17 14 :       0.1185  bohr^-1
+	 17 15 :       0.1105  bohr^-1
+	 17 16 :       0.2169  bohr^-1
+	 17 17 :       0.2826  bohr^-1
+	 17 18 :       0.0973  bohr^-1
+	 17 19 :       0.1028  bohr^-1
+	 17 20 :       0.0857  bohr^-1
+	 17 21 :       0.1241  bohr^-1
+	 17 22 :       0.1148  bohr^-1
+	 17 23 :       0.1121  bohr^-1
+	 18  1 :       0.0817  bohr^-1
+	 18  2 :       0.0692  bohr^-1
+	 18  3 :       0.1653  bohr^-1
+	 18  4 :       0.1217  bohr^-1
+	 18  5 :       0.1923  bohr^-1
+	 18  6 :       0.1005  bohr^-1
+	 18  7 :       0.2489  bohr^-1
+	 18  8 :       0.0703  bohr^-1
+	 18  9 :       0.0603  bohr^-1
+	 18 10 :       0.1584  bohr^-1
+	 18 11 :       0.1819  bohr^-1
+	 18 12 :       0.1106  bohr^-1
+	 18 13 :       0.1185  bohr^-1
+	 18 14 :       0.1611  bohr^-1
+	 18 15 :       0.1860  bohr^-1
+	 18 16 :       0.1028  bohr^-1
+	 18 17 :       0.0973  bohr^-1
+	 18 18 :       0.3114  bohr^-1
+	 18 19 :       0.2299  bohr^-1
+	 18 20 :       0.2318  bohr^-1
+	 18 21 :       0.0587  bohr^-1
+	 18 22 :       0.0599  bohr^-1
+	 18 23 :       0.0549  bohr^-1
+	 19  1 :       0.0817  bohr^-1
+	 19  2 :       0.0692  bohr^-1
+	 19  3 :       0.1653  bohr^-1
+	 19  4 :       0.1217  bohr^-1
+	 19  5 :       0.1923  bohr^-1
+	 19  6 :       0.1005  bohr^-1
+	 19  7 :       0.2489  bohr^-1
+	 19  8 :       0.0703  bohr^-1
+	 19  9 :       0.0603  bohr^-1
+	 19 10 :       0.1819  bohr^-1
+	 19 11 :       0.1584  bohr^-1
+	 19 12 :       0.1185  bohr^-1
+	 19 13 :       0.1106  bohr^-1
+	 19 14 :       0.1860  bohr^-1
+	 19 15 :       0.1611  bohr^-1
+	 19 16 :       0.0972  bohr^-1
+	 19 17 :       0.1028  bohr^-1
+	 19 18 :       0.2299  bohr^-1
+	 19 19 :       0.3114  bohr^-1
+	 19 20 :       0.2318  bohr^-1
+	 19 21 :       0.0599  bohr^-1
+	 19 22 :       0.0587  bohr^-1
+	 19 23 :       0.0549  bohr^-1
+	 20  1 :       0.0748  bohr^-1
+	 20  2 :       0.0616  bohr^-1
+	 20  3 :       0.1422  bohr^-1
+	 20  4 :       0.1109  bohr^-1
+	 20  5 :       0.1941  bohr^-1
+	 20  6 :       0.0882  bohr^-1
+	 20  7 :       0.2518  bohr^-1
+	 20  8 :       0.0639  bohr^-1
+	 20  9 :       0.0563  bohr^-1
+	 20 10 :       0.1364  bohr^-1
+	 20 11 :       0.1364  bohr^-1
+	 20 12 :       0.1084  bohr^-1
+	 20 13 :       0.1084  bohr^-1
+	 20 14 :       0.1884  bohr^-1
+	 20 15 :       0.1884  bohr^-1
+	 20 16 :       0.0857  bohr^-1
+	 20 17 :       0.0857  bohr^-1
+	 20 18 :       0.2318  bohr^-1
+	 20 19 :       0.2318  bohr^-1
+	 20 20 :       0.3206  bohr^-1
+	 20 21 :       0.0560  bohr^-1
+	 20 22 :       0.0561  bohr^-1
+	 20 23 :       0.0512  bohr^-1
+	 21  1 :       0.1746  bohr^-1
+	 21  2 :       0.1592  bohr^-1
+	 21  3 :       0.0841  bohr^-1
+	 21  4 :       0.1074  bohr^-1
+	 21  5 :       0.0724  bohr^-1
+	 21  6 :       0.1280  bohr^-1
+	 21  7 :       0.0609  bohr^-1
+	 21  8 :       0.1968  bohr^-1
+	 21  9 :       0.2552  bohr^-1
+	 21 10 :       0.0822  bohr^-1
+	 21 11 :       0.0792  bohr^-1
+	 21 12 :       0.1125  bohr^-1
+	 21 13 :       0.1054  bohr^-1
+	 21 14 :       0.0736  bohr^-1
+	 21 15 :       0.0714  bohr^-1
+	 21 16 :       0.1148  bohr^-1
+	 21 17 :       0.1241  bohr^-1
+	 21 18 :       0.0587  bohr^-1
+	 21 19 :       0.0599  bohr^-1
+	 21 20 :       0.0560  bohr^-1
+	 21 21 :       0.3205  bohr^-1
+	 21 22 :       0.2318  bohr^-1
+	 21 23 :       0.2335  bohr^-1
+	 22  1 :       0.1747  bohr^-1
+	 22  2 :       0.1591  bohr^-1
+	 22  3 :       0.0842  bohr^-1
+	 22  4 :       0.1075  bohr^-1
+	 22  5 :       0.0725  bohr^-1
+	 22  6 :       0.1281  bohr^-1
+	 22  7 :       0.0610  bohr^-1
+	 22  8 :       0.1968  bohr^-1
+	 22  9 :       0.2552  bohr^-1
+	 22 10 :       0.0793  bohr^-1
+	 22 11 :       0.0822  bohr^-1
+	 22 12 :       0.1056  bohr^-1
+	 22 13 :       0.1126  bohr^-1
+	 22 14 :       0.0715  bohr^-1
+	 22 15 :       0.0736  bohr^-1
+	 22 16 :       0.1241  bohr^-1
+	 22 17 :       0.1148  bohr^-1
+	 22 18 :       0.0599  bohr^-1
+	 22 19 :       0.0587  bohr^-1
+	 22 20 :       0.0561  bohr^-1
+	 22 21 :       0.2318  bohr^-1
+	 22 22 :       0.3205  bohr^-1
+	 22 23 :       0.2335  bohr^-1
+	 23  1 :       0.1497  bohr^-1
+	 23  2 :       0.1831  bohr^-1
+	 23  3 :       0.0758  bohr^-1
+	 23  4 :       0.0927  bohr^-1
+	 23  5 :       0.0646  bohr^-1
+	 23  6 :       0.1157  bohr^-1
+	 23  7 :       0.0558  bohr^-1
+	 23  8 :       0.1973  bohr^-1
+	 23  9 :       0.2556  bohr^-1
+	 23 10 :       0.0742  bohr^-1
+	 23 11 :       0.0743  bohr^-1
+	 23 12 :       0.0913  bohr^-1
+	 23 13 :       0.0913  bohr^-1
+	 23 14 :       0.0639  bohr^-1
+	 23 15 :       0.0639  bohr^-1
+	 23 16 :       0.1122  bohr^-1
+	 23 17 :       0.1121  bohr^-1
+	 23 18 :       0.0549  bohr^-1
+	 23 19 :       0.0549  bohr^-1
+	 23 20 :       0.0512  bohr^-1
+	 23 21 :       0.2335  bohr^-1
+	 23 22 :       0.2335  bohr^-1
+	 23 23 :       0.3220  bohr^-1
+    ===> SCF Iteration Started <===
+
+     Iter. |                   Energy |       Delta E |          Drms |
+    -------|--------------------------|---------------|---------------|
+         1 |      -421.83387442748113 |    -4.218e+02 |     1.092e-02 |
+         2 |      -422.73233101511840 |    -8.985e-01 |     2.561e-03 | DIIS
+         3 |      -422.94358084977256 |    -2.112e-01 |     4.562e-04 | DIIS
+         4 |      -423.00007349886806 |    -5.649e-02 |     2.814e-04 | DIIS
+         5 |      -423.00500538643183 |    -4.932e-03 |     1.065e-04 | DIIS
+         6 |      -423.00597573376382 |    -9.703e-04 |     2.264e-05 | DIIS
+         7 |      -423.00602596809387 |    -5.023e-05 |     2.115e-05 | DIIS
+         8 |      -423.00604369605554 |    -1.773e-05 |     1.282e-05 | DIIS
+         9 |      -423.00604889712730 |    -5.201e-06 |     1.548e-06 | DIIS
+        10 |      -423.00604976937240 |    -8.722e-07 |     1.676e-06 | DIIS
+        11 |      -423.00605014426577 |    -3.749e-07 |     2.034e-07 | DIIS
+        12 |      -423.00605010503358 |     3.923e-08 |     4.624e-08 | DIIS
+        13 |      -423.00605015422349 |    -4.919e-08 |     2.327e-08 | DIIS
+        14 |      -423.00605016000299 |    -5.779e-09 |     7.336e-09 | DIIS
+
+
+	-Alpha Occupied Orbital Energies (au):  
+	 1: -20.5674082387 	 2: -20.5117175045 	 3: -11.3509416073 	 4: -11.2572433588 	 5: -11.2116975598 
+	 6: -11.1954865914 	 7: -11.1945577387 	 8: -11.1921999766 	 9: -11.1873841086 	10: -1.4178189999 
+	11: -1.3188738221 	12: -1.0604655252 	13: -1.0083872946 	14: -0.9704179817 	15: -0.8913952008 
+	16: -0.7998260117 	17: -0.7662719818 	18: -0.7393974968 	19: -0.6541960120 	20: -0.6483827225 
+	21: -0.6281427173 	22: -0.6114431711 	23: -0.5715499314 	24: -0.5542951499 	25: -0.5428034475 
+	26: -0.5304438978 	27: -0.5182274702 	28: -0.5064728719 	29: -0.4849268314 	30: -0.4687239274 
+	31: -0.4530649014 	32: -0.4452558793 	33: -0.4366920515 	34: -0.4272235950 	35: -0.4198452061 
+	36: -0.4045567507 
+	-Alpha Virtual Orbital Energies (au):  
+	37: 0.1960515923 	38: 0.2093858939 	39: 0.2107433405 	40: 0.2213108510 	41: 0.2229866938 
+	42: 0.2269844564 	43: 0.2685089642 	44: 0.2727060210 	45: 0.2749847701 	46: 0.2883864330 
+	47: 0.2900076251 	48: 0.2947743563 	49: 0.3035897706 	50: 0.3196419331 	51: 0.3434426536 
+	52: 0.3491866263 	53: 0.3883715620 	54: 0.3956145833 	55: 0.4274653673 	56: 0.4572323123 
+	57: 0.4652088744 	58: 0.4975702934 	59: 0.5318629722 	60: 0.5842893582 	61: 0.5969772352 
+	62: 0.6162570519 	63: 0.6426100990 	64: 0.6429119179 	65: 0.6534581894 	66: 0.6696778601 
+	67: 0.6745742920 	68: 0.7064794793 	69: 0.7216596914 	70: 0.7336735552 	71: 0.7683617109 
+	72: 0.8189156834 	73: 0.8366974704 	74: 0.8539460840 	75: 0.8677335769 	76: 0.8741665683 
+	77: 0.8759299514 	78: 0.8903441329 	79: 0.8918963863 	80: 0.8941390542 	81: 0.9038693204 
+	82: 0.9097322965 	83: 0.9121815973 	84: 0.9176733492 	85: 0.9177990966 	86: 0.9190435208 
+	87: 0.9276019033 	88: 0.9393341394 	89: 0.9470230167 	90: 0.9626355207 	91: 0.9709344887 
+	92: 0.9837701377 	93: 1.0051145460 	94: 1.0434746685 	95: 1.0510285859 	96: 1.1123920773 
+	97: 1.1242771652 	98: 1.1272516403 	99: 1.1897538327 	100: 1.2202417431 	101: 1.3014800609 
+	102: 1.3209754110 	103: 1.3484151333 	104: 1.3883036949 	105: 1.3905677798 	106: 1.4267308337 
+	107: 1.4515006265 	108: 1.4561878968 	109: 1.4608837827 	110: 1.4697991492 	111: 1.4722470549 
+	112: 1.4847307716 	113: 1.5019707230 	114: 1.5187705705 	115: 1.5739409763 	116: 1.6384251164 
+	117: 1.6547642125 	118: 1.6666824783 	119: 1.6678318561 	120: 1.6803399522 	121: 1.6887767324 
+	122: 1.7282667233 	123: 1.8417229277 	124: 1.8495565499 	125: 1.8680412667 	126: 1.8720278888 
+	127: 1.8877398034 	128: 1.8969967805 	129: 1.9066166070 	130: 1.9102691908 	131: 1.9178483898 
+	132: 1.9277553719 	133: 1.9321971207 	134: 1.9352230888 	135: 1.9455667832 	136: 1.9512929019 
+	137: 1.9737791493 	138: 1.9873281658 	139: 1.9907748185 	140: 1.9943407367 	141: 2.0018148222 
+	142: 2.0042660612 	143: 2.0215799325 	144: 2.0330913193 	145: 2.0406657764 	146: 2.0582063890 
+	147: 2.0880597719 	148: 2.1002704566 	149: 2.1276388676 	150: 2.1368642836 	151: 2.1874671667 
+	152: 2.2153528070 	153: 2.2373928480 	154: 2.2486028736 	155: 2.2772291372 	156: 2.2798238379 
+	157: 2.3173263875 	158: 2.3770376072 	159: 2.3998486303 	160: 2.4265395697 	161: 2.4345989139 
+	162: 2.4717733768 	163: 2.4974454060 	164: 2.5177679451 	165: 2.5453434092 	166: 2.5500929042 
+	167: 2.5821097261 	168: 2.5988398970 	169: 2.6186807601 	170: 2.6366822673 	171: 2.6447257872 
+	172: 2.6535984679 	173: 2.7008728277 	174: 2.7402351177 	175: 2.7685727919 	176: 2.7702367924 
+	177: 2.8000096431 	178: 2.8136022241 	179: 2.8233966765 	180: 2.8476258419 	181: 2.8701408432 
+	182: 2.9174141023 	183: 2.9244655089 	184: 2.9567363065 	185: 3.0027348462 	186: 3.0688085361 
+	187: 3.0918988604 	188: 3.1010661671 	189: 3.2810990093 	190: 3.3240936346 	191: 3.3754935552 
+	192: 3.5444825776 	193: 3.5662568883 	194: 3.7570116627 	195: 3.8707617894 	196: 3.9138228675 
+
+
+
+	-Mulliken Population Analysis for SCF:
+	 1: -0.4660368214 	 2: -0.3965802751 	 3: -0.0931416398 	 4: -0.0921173046 	 5: -0.1124468414 
+	 6: 0.2313326585 	 7: -0.0182542575 	 8: 0.3428822569 	 9: 0.0053365941 	10: 0.0335099917 
+	11: 0.0335161077 	12: 0.0414792315 	13: 0.0414590060 	14: 0.0351597083 	15: 0.0351633512 
+	16: 0.0500361690 	17: 0.0499701794 	18: 0.0293615689 	19: 0.0293637562 	20: 0.0299096125 
+	21: 0.0655938915 	22: 0.0654456838 	23: 0.0590573725 
+
+	-Lowdin Population Analysis for SCF:  
+	 1: -0.0187273016 	 2: -0.1405014438 	 3: -0.0342868409 	 4: -0.0447762139 	 5: -0.0457302418 
+	 6: 0.0432672592 	 7: -0.0492734219 	 8: -0.0187114784 	 9: -0.0514752325 	10: 0.0199917129 
+	11: 0.0199958939 	12: 0.0241343980 	13: 0.0241296100 	14: 0.0215209821 	15: 0.0215217466 
+	16: 0.0210299992 	17: 0.0210110567 	18: 0.0200736059 	19: 0.0200728753 	20: 0.0220229254 
+	21: 0.0427876954 	22: 0.0427037106 	23: 0.0392187034 
+
+	-Electronic Dipole Moment: (e a0)  
+	 X:  13.83942   Y:  1.84511   Z:  0.00071   Total:  13.96188 
+
+	-Electronic Dipole Moment: (D)  
+	 X:  35.17630   Y:  4.68980   Z:  0.00180   Total:  35.48755 
+
+	-Total Dipole Moment: (e a0)  
+	 X:  -0.40204   Y:  -0.76766   Z:  -0.00066   Total:  0.86657 
+
+	-Total Dipole Moment: (D)  
+	 X:  -1.02189   Y:  -1.95120   Z:  -0.00167   Total:  2.20260 
+
+
+
+	Initializing Liboeprop (by U. Bozkaya) ...
+
+
+	-Mulliken Population Analysis for SCF-IAO:
+	 1: -0.4390986897 	 2: -0.5390427837 	 3: -0.2100926925 	 4: -0.2247896123 	 5: -0.2117941010 
+	 6: 0.0149283896 	 7: -0.3493373515 	 8: 0.6484085321 	 9: -0.4123202592 	10: 0.1076522168 
+	11: 0.1076572316 	12: 0.1179236064 	13: 0.1179101441 	14: 0.1116107668 	15: 0.1116083827 
+	16: 0.1264352875 	17: 0.1263779098 	18: 0.1141467888 	19: 0.1141458696 	20: 0.1182378090 
+	21: 0.1508670289 	22: 0.1507858040 	23: 0.1480630989 
+
+	-Lowdin Population Analysis for SCF-IAO:  
+	 1: -0.4390986897 	 2: -0.5390427837 	 3: -0.2100926925 	 4: -0.2247896123 	 5: -0.2117941010 
+	 6: 0.0149283896 	 7: -0.3493373515 	 8: 0.6484085321 	 9: -0.4123202592 	10: 0.1076522168 
+	11: 0.1076572316 	12: 0.1179236064 	13: 0.1179101441 	14: 0.1116107668 	15: 0.1116083827 
+	16: 0.1264352875 	17: 0.1263779098 	18: 0.1141467888 	19: 0.1141458696 	20: 0.1182378090 
+	21: 0.1508670289 	22: 0.1507858040 	23: 0.1480630989 
+
+	Initializing Liblocal (by U. Bozkaya) ...
+  ==> Pipek-Mezey Localizer <==
+
+    Convergence =   1.000E-08
+    Maxiter     =          50
+
+    Iteration                   Metric       Residual
+    PM    0   1.8372490061076391E+01              -
+    PM    1   3.8428576922788274E+01   1.091637E+00
+    PM    2   4.5225888156644835E+01   1.768817E-01
+    PM    3   4.5686630431651963E+01   1.018758E-02
+    PM    4   4.5695363230303272E+01   1.911456E-04
+    PM    5   4.5695435438574940E+01   1.580210E-06
+    PM    6   4.5695436263149510E+01   1.804501E-08
+    PM    7   4.5695436275435050E+01   2.688570E-10
+
+    PM Localizer converged.
+
+
+
+	*Molecular contr. to CDS energy:       0.0000  kcal/mol
+	*Total CDS energy:       5.2508  kcal/mol
+	*SCF::Polarization Free Energy (au)      : -0.0081954840 
+	*SCF::Polarization Free Energy (kcal/mol):      -5.1427 
+	*SCF::CDS Free Energy (au)      : 0.0083676991 
+	*SCF::CDS Free Energy (kcal/mol):       5.2508 
+	*SCF::Total Solvation Free Energy (au)      : 0.0001722151 
+	*SCF::Total Solvation Free Energy (kcal/mol):       0.1081 
+ CC-PVDZ primary basis set file will be read for the O atom...
+ CC-PVDZ primary basis set file will be read for the C atom...
+ CC-PVDZ primary basis set file will be read for the H atom...
+ Nmaxthread: 20 
+ Nshell: 96 
+ Lmax:  2 
+ Npmax:  8 
+ Nao: 196 
+ Ndocc: 36 
+ Nsocc:  0 
+ NoccA: 36 
+ NoccB: 36 
+ Primary basis set info has been read.
+
+ CC-PVDZ-JKFIT aux basis set file will be read for the O atom...
+ CC-PVDZ-JKFIT aux basis set file will be read for the C atom...
+ CC-PVDZ-JKFIT aux basis set file will be read for the H atom...
+ Nshell_aux: 342 
+ Naux: 952 
+ Aux basis set info has been read.
+
+
+	*Total SCF Energy: -423.00605016000299
+
+ Cpu time for SCF :       2.5523 minutes
+ Wall time for SCF:       1.1383 minutes
+
+
+	MO spaces... 
+
+	 FC   OCC   VIR   FV 
+	----------------------
+	  9   27   160    0
+
+
+	Libtrans is initialized (by U. Bozkaya) ...
+
+ ============================================================================== 
+ ============================================================================== 
+ ============================================================================== 
+
+                       DF-MP2   
+              Program Written by Ugur Bozkaya
+              Latest Revision May 2, 2021
+
+ ============================================================================== 
+ ============================================================================== 
+ ============================================================================== 
+
+	For this residual convergence, default PCG convergence is:     1.00e-07
+    Warning: "PCG_CONVERGENCE" option is changed to     1.00e-07
+
+
+  ## DFOCC Options ##
+
+  | TYPE         | KEY                      | INPUT? | VALUE              | DEFAULT            
+  |--------------|--------------------------|--------|--------------------|--------------------
+  | BOOL         | EOM                      | NO     | FALSE              | FALSE              
+  | BOOL         | EOM_MP2                  | NO     | FALSE              | FALSE              
+  | BOOL         | EOM_MP3                  | NO     | FALSE              | FALSE              
+  | BOOL         | EOM_MP2_5                | NO     | FALSE              | FALSE              
+  | BOOL         | EOM_LCCD                 | NO     | FALSE              | FALSE              
+  | BOOL         | LOW_MEM_MP2              | NO     | FALSE              | FALSE              
+  | BOOL         | LOW_MEM_MP3              | NO     | FALSE              | FALSE              
+  | BOOL         | CD_PRESCREEN             | NO     | FALSE              | FALSE              
+  | DOUBLE       | CIS_E_CONV               | NO     | 1e-06              | 1e-06              
+  | DOUBLE       | CIS_R_CONV               | NO     | 1e-06              | 1e-06              
+  | DOUBLE       | CIS_RES_PRECONDITION_TOL | NO     | 0.0001             | 0.0001             
+  | DOUBLE       | DAVIDSON_TOLERANCE       | NO     | 1e-06              | 1e-06              
+  | DOUBLE       | E3_SCALE                 | NO     | 0.25               | 0.25               
+  | DOUBLE       | E_CONVERGENCE            | NO     | 1e-06              | 1e-06              
+  | DOUBLE       | JK_MEMORY                | NO     | 1000000000.0       | 1000000000.0       
+  | DOUBLE       | LEVEL_SHIFT              | NO     | 0.02               | 0.02               
+  | DOUBLE       | MAX_MOGRAD_CONVERGENCE   | NO     | 0.001              | 0.001              
+  | DOUBLE       | MO_STEP_MAX              | NO     | 0.5                | 0.5                
+  | DOUBLE       | MP2_OS_SCALE             | NO     | 1.2                | 1.2                
+  | DOUBLE       | MP2_SOS_SCALE            | NO     | 1.3                | 1.3                
+  | DOUBLE       | MP2_SOS_SCALE2           | NO     | 1.2                | 1.2                
+  | DOUBLE       | MP2_SS_SCALE             | NO     | 0.3333333333333333 | 0.3333333333333333 
+  | DOUBLE       | OCC_PERCENTAGE           | NO     | 99.0               | 99.0               
+  | DOUBLE       | OCC_TOLERANCE            | NO     | 1e-05              | 1e-05              
+  | DOUBLE       | OO_SCALE                 | NO     | 0.01               | 0.01               
+  | DOUBLE       | PCG_CONVERGENCE          | NO     | 1e-06              | 1e-06              
+  | DOUBLE       | R_CONVERGENCE            | NO     | 1e-05              | 1e-05              
+  | DOUBLE       | REG_PARAM                | NO     | 0.4                | 0.4                
+  | DOUBLE       | KAPPA_REG_PARAM          | NO     | 1.1                | 1.1                
+  | DOUBLE       | RMS_MOGRAD_CONVERGENCE   | NO     | 1e-06              | 1e-06              
+  | DOUBLE       | SCG_TOLERANCE            | NO     | 1e-06              | 1e-06              
+  | DOUBLE       | SCHMIDT_ADD_RES_TOL      | NO     | 0.001              | 0.001              
+  | INT          | ACTIVE_NAT_ORBS          | NO     | 2                  | 2                  
+  | INT          | CC_DIIS_MAX_VECS         | NO     | 6                  | 6                  
+  | INT          | CC_DIIS_MIN_VECS         | NO     | 2                  | 2                  
+  | INT          | CC_MAXITER               | NO     | 50                 | 50                 
+  | INT          | CUTOFF                   | NO     | 8                  | 8                  
+  | INT          | EXCITATION_RANGE         | NO     | 2                  | 2                  
+  | INT          | FOLLOW_ROOT              | NO     | 1                  | 1                  
+  | INT          | INTEGRAL_CUTOFF          | NO     | 9                  | 9                  
+  | INT          | MAX_VECS                 | NO     | 50                 | 50                 
+  | INT          | MO_DIIS_NUM_VECS         | NO     | 6                  | 6                  
+  | INT          | MO_MAXITER               | NO     | 50                 | 50                 
+  | INT          | NUM_ROOTS                | NO     | 4                  | 4                  
+  | INT          | PCG_MAXITER              | NO     | 50                 | 50                 
+  | INT          | PRINT_LEVEL              | NO     | 0                  | 0                  
+  | INT          | VECS_PER_ROOT            | NO     | 1                  | 1                  
+  | STRING       | CC_LAMBDA                | NO     | FALSE              | FALSE              
+  | STRING       | CHOLESKY                 | NO     | FALSE              | FALSE              
+  | STRING       | CIS_ALGORITHM            | NO     | MO_BASIS           | MO_BASIS           
+  | STRING       | CIS_GUESS_COEFF          | NO     | MIX                | MIX                
+  | STRING       | COMPUT_S2                | NO     | FALSE              | FALSE              
+  | STRING       | DIAG_METHOD              | NO     | DAVIDSON           | DAVIDSON           
+  | STRING       | DO_DIIS                  | NO     | TRUE               | TRUE               
+  | STRING       | DO_LEVEL_SHIFT           | NO     | TRUE               | TRUE               
+  | STRING       | DO_SCS                   | NO     | FALSE              | FALSE              
+  | STRING       | DO_SOS                   | NO     | FALSE              | FALSE              
+  | STRING       | EKT_IP                   | NO     | FALSE              | FALSE              
+  | STRING       | FREEZE_CORE              | NO     | TRUE               | TRUE               
+  | STRING       | HESS_TYPE                | NO     | HF                 | HF                 
+  | STRING       | JK_TYPE                  | NO     | DIRECT             | DIRECT             
+  | STRING       | LINEQ_SOLVER             | NO     | CDGESV             | CDGESV             
+  | STRING       | MO_READ                  | NO     | FALSE              | FALSE              
+  | STRING       | MO_WRITE                 | NO     | FALSE              | FALSE              
+  | STRING       | MP2_AMP_TYPE             | NO     | DIRECT             | DIRECT             
+  | STRING       | NAT_ORBS                 | NO     | FALSE              | FALSE              
+  | STRING       | NBO                      | NO     | TRUE               | TRUE               
+  | STRING       | OCC_ORBS_PRINT           | NO     | FALSE              | FALSE              
+  | STRING       | OEPROP                   | NO     | FALSE              | FALSE              
+  | STRING       | OPT_METHOD               | NO     | QNR                | QNR                
+  | STRING       | ORB_RESP_SOLVER          | NO     | PCG                | PCG                
+  | STRING       | ORTH_TYPE                | NO     | MGS                | MGS                
+  | STRING       | PCG_BETA_TYPE            | NO     | FLETCHER_REEVES    | FLETCHER_REEVES    
+  | STRING       | PPL_TYPE                 | NO     | AUTO               | AUTO               
+  | STRING       | PRINT_CI_VECS            | NO     | FALSE              | FALSE              
+  | STRING       | QCHF                     | NO     | FALSE              | FALSE              
+  | STRING       | READ_SCF_3INDEX          | NO     | TRUE               | TRUE               
+  | STRING       | REGULARIZATION           | NO     | FALSE              | FALSE              
+  | STRING       | REG_TYPE                 | NO     | NORMAL             | NORMAL             
+  | STRING       | SCS_TYPE                 | NO     | SCS                | SCS                
+  | STRING       | SOS_TYPE                 | NO     | SOS                | SOS                
+  | STRING       | TRIPLES_IABC_TYPE        | NO     | DISK               | DISK               
+  | STRING       | UNIT_GUESS_TYPE          | NO     | GEN                | GEN                
+  | STRING       | EKT_NEGATIVE_OCC         | NO     | ABS                | ABS                
+  | BOOL         | SOLVATION                | YES    | TRUE               | FALSE              
+
+	MO spaces... 
+
+	 FC   OCC   VIR   FV 
+	----------------------
+	  9   27   160    0
+ CC-PVDZ primary basis set file will be read for the O atom...
+ CC-PVDZ primary basis set file will be read for the C atom...
+ CC-PVDZ primary basis set file will be read for the H atom...
+ Nmaxthread: 20 
+ Nshell: 96 
+ Lmax:  2 
+ Npmax:  8 
+ Nao: 196 
+ Ndocc: 36 
+ Nsocc:  0 
+ NoccA: 36 
+ NoccB: 36 
+ Primary basis set info has been read.
+
+ CC-PVDZ-RI aux basis set file will be read for the O atom...
+ CC-PVDZ-RI aux basis set file will be read for the C atom...
+ CC-PVDZ-RI aux basis set file will be read for the H atom...
+ Nshell_aux: 246 
+ Naux: 700 
+ Aux basis set info has been read.
+
+ Cpu time for Metric ints :       0.9900 s
+ Wall time for Metric ints:       0.4453 s
+ 3-Index Algorithm: AUTO 
+
+ Calling fortran integrals: ringing... 
+ Done with fintegrals.
+
+ Cpu time for 3-index ints :      12.0300 s
+ Wall time for 3-index ints:       3.7398 s
+ Cpu time for df-factors :       3.3400 s
+ Wall time for df-factors:       0.8672 s
+ CC-PVDZ primary basis set file will be read for the O atom...
+ CC-PVDZ primary basis set file will be read for the C atom...
+ CC-PVDZ primary basis set file will be read for the H atom...
+ Nmaxthread: 20 
+ Nshell: 96 
+ Lmax:  2 
+ Npmax:  8 
+ Nao: 196 
+ Ndocc: 36 
+ Nsocc:  0 
+ NoccA: 36 
+ NoccB: 36 
+ Primary basis set info has been read.
+
+ CC-PVDZ-JKFIT aux basis set file will be read for the O atom...
+ CC-PVDZ-JKFIT aux basis set file will be read for the C atom...
+ CC-PVDZ-JKFIT aux basis set file will be read for the H atom...
+ Nshell_aux: 342 
+ Naux: 952 
+ Aux basis set info has been read.
+
+	Reading DF integrals from disk ...
+ Cpu time for Metric ints :       2.0900 s
+ Wall time for Metric ints:       0.9156 s
+	Number of basis functions in the DF-HF basis: 952
+	Number of basis functions in the DF-CC basis: 700
+
+	Available memory                      :  30000.00 MB 
+	Minimum required memory for amplitudes:    447.90 MB 
+	Memory requirement for B-CC (Q|mu nu) :    215.13 MB 
+	Memory requirement for B-CC (Q|ab)    :    143.36 MB 
+	Memory requirement for DF-CC int trans:    390.75 MB 
+
+	Computing DF-MP2 energy using SCF MOs (Canonical DF-MP2)... 
+	======================================================================= 
+	Nuclear Repulsion Energy (a.u.)    :   447.43704068160508
+	DF-HF Energy (a.u.)                :  -423.00605016000299
+	REF Energy (a.u.)                  :  -423.00605016000299
+	DF-MP2 Correlation Energy (a.u.)   :    -1.36518184103856
+	DF-MP2 Total Energy (a.u.)         :  -424.37123200104156
+	======================================================================= 
+
+	*Total MP2 Energy: -424.37123200104156
+
+	Computing unrelaxed response density matrices...
+	Number of independent-pairs: 5760
+	Computing the generalized Fock matrix (GFM)...
+	Computing the orbital gradient...
+	Forming effective orbital gradient...
+	Solving orbital Z-vector equations...
+
+	            PCG Solver 
+	   ------------------------------ 
+	Iter     RMS Z Vector        RMS Residual  
+	----    ---------------    ---------------
+	  1         8.42e-04         7.25e-04
+	  2         4.31e-04         3.65e-04
+	  3         1.34e-04         7.35e-05
+	  4         4.08e-05         2.82e-05
+	  5         9.90e-06         7.55e-06
+	  6         5.02e-06         3.88e-06
+	  7         1.21e-06         1.23e-06
+	  8         6.67e-07         3.93e-07
+	  9         1.50e-07         1.37e-07
+	 10         6.17e-08         3.77e-08
+
+	Computing the relaxed PDMs and GFM...
+	Compute solv. is starting ...
+
+	Initializing Liboeprop (by U. Bozkaya) ...
+
+
+	-Mulliken Population Analysis for MP2-IAO:
+	 1: -0.1616219457 	 2: -0.3175593171 	 3: -0.0667650303 	 4: -0.0883910890 	 5: -0.0713626466 
+	 6: 0.1083685824 	 7: -0.2170972476 	 8: 0.5207368690 	 9: -0.2903351859 	10: 0.0651531770 
+	11: 0.0651774863 	12: 0.0681828694 	13: 0.0681916791 	14: 0.0677120022 	15: 0.0677130192 
+	16: 0.0683011103 	17: 0.0682127609 	18: 0.0722558990 	19: 0.0722472707 	20: 0.0559345973 
+	21: 0.0814553918 	22: 0.0814687773 	23: 0.0756726343 
+
+	-Lowdin Population Analysis for MP2-IAO:  
+	 1: -0.1616219457 	 2: -0.3175593171 	 3: -0.0667650303 	 4: -0.0883910890 	 5: -0.0713626466 
+	 6: 0.1083685824 	 7: -0.2170972476 	 8: 0.5207368690 	 9: -0.2903351859 	10: 0.0651531770 
+	11: 0.0651774863 	12: 0.0681828694 	13: 0.0681916791 	14: 0.0677120022 	15: 0.0677130192 
+	16: 0.0683011103 	17: 0.0682127609 	18: 0.0722558990 	19: 0.0722472707 	20: 0.0559345973 
+	21: 0.0814553918 	22: 0.0814687773 	23: 0.0756726343 
+
+
+  ## SOLVATION Options ##
+
+  | TYPE         | KEY                      | INPUT? | VALUE              | DEFAULT            
+  |--------------|--------------------------|--------|--------------------|--------------------
+  | INT          | NUM_Z_POINTS             | NO     | 90                 | 90                 
+  | INT          | NUM_ANG_POINTS           | YES    | 100                | 100                
+  | STRING       | SASA_TYPE                | YES    | NUMERIC            | NUMERIC            
+  | STRING       | CHARGE_TYPE              | YES    | IAO_MULLIKEN       | IAO_MULLIKEN       
+  | STRING       | CDS_TYPE                 | YES    | SMD                | SMD                
+  | STRING       | SOLVENT                  | YES    | WATER              | WATER              
+  | STRING       | SOLVENT_PARAMS           | YES    | MN21               | SM8                
+  | STRING       | DIELECTRIC_PARAMS        | YES    | MN21               | MN21               
+  | STRING       | COULOMB_RADII            | YES    | SMD                | SMD                
+  | DOUBLE       | COVALENT_VW_CONST        | NO     | 0.76               | 0.76               
+  | DOUBLE       | SOLVENT_RADIUS           | NO     | 0.4                | 0.4                
+  | STRING       | RADIUS_TYPE              | YES    | SMD                | SMD                
+  | DOUBLE       | GB_DIJ                   | NO     | 3.7                | 3.7                
+  | DOUBLE       | GB_SIJ                   | NO     | 0.75               | 0.75               
+  | DOUBLE       | GB_CIJ                   | NO     | 0.0                | 0.0                
+  | DOUBLE       | F_PWSASA                 | NO     | 0.4535             | 0.4535             
+  | DOUBLE       | SCALE_VDW                | NO     | 1.0                | 1.0                
+  | DOUBLE       | SCALE_CR                 | NO     | 1.0                | 1.0                
+
+
+
+ Sasa Type                  : NUMERIC 
+ Charge Type                : IAO_MULLIKEN 
+ CDS Type                   : SMD 
+ Radius Type                : SMD 
+ Solvent                    : WATER 
+ Solvent Parameters         : MN21 
+ Dielectric Parameters      : MN21 
+ Coulomb Radii Parameters   : SMD 
+ GB d_ij parameter          : 3.7000000000 
+ GB S_ij parameter          : 0.7500000000 
+ GB C_ij parameter          : 0.0000000000 
+ Sclae_vdw parameter        : 1.0000000000 
+ Number of z-points         : 90 
+ Number of angular points   : 100 
+ Number of SASA grid points : 17902 
+ Solvent Dielectric Constant: 78.3553000000 
+
+ VDW Radii:
+	  1 O :       1.5200  ang
+	  2 O :       1.5200  ang
+	  3 C :       1.7000  ang
+	  4 C :       1.7000  ang
+	  5 C :       1.7000  ang
+	  6 C :       1.7000  ang
+	  7 C :       1.7000  ang
+	  8 C :       1.7000  ang
+	  9 C :       1.7000  ang
+	 10 H :       1.2000  ang
+	 11 H :       1.2000  ang
+	 12 H :       1.2000  ang
+	 13 H :       1.2000  ang
+	 14 H :       1.2000  ang
+	 15 H :       1.2000  ang
+	 16 H :       1.2000  ang
+	 17 H :       1.2000  ang
+	 18 H :       1.2000  ang
+	 19 H :       1.2000  ang
+	 20 H :       1.2000  ang
+	 21 H :       1.2000  ang
+	 22 H :       1.2000  ang
+	 23 H :       1.2000  ang
+
+	 Computing SASA... 
+
+ Atomic SASA values:
+	  1 O :      10.8010  ang^2
+	  2 O :      22.7121  ang^2
+	  3 C :       2.7613  ang^2
+	  4 C :       2.7799  ang^2
+	  5 C :       3.5538  ang^2
+	  6 C :       3.0275  ang^2
+	  7 C :       8.9866  ang^2
+	  8 C :       7.3304  ang^2
+	  9 C :       9.7729  ang^2
+	 10 H :      10.9114  ang^2
+	 11 H :      10.9024  ang^2
+	 12 H :      11.4469  ang^2
+	 13 H :      11.4397  ang^2
+	 14 H :      11.6895  ang^2
+	 15 H :      11.6859  ang^2
+	 16 H :      10.7856  ang^2
+	 17 H :      10.7982  ang^2
+	 18 H :      12.0938  ang^2
+	 19 H :      12.0902  ang^2
+	 20 H :      12.9312  ang^2
+	 21 H :      12.6275  ang^2
+	 22 H :      12.6078  ang^2
+	 23 H :      12.4191  ang^2
+
+	*Total SASA (angs^2): 236.1544964684 
+
+
+ Coulomb Radii:
+	  1 O :       1.5200  ang
+	  2 O :       1.5200  ang
+	  3 C :       1.8500  ang
+	  4 C :       1.8500  ang
+	  5 C :       1.8500  ang
+	  6 C :       1.8500  ang
+	  7 C :       1.8500  ang
+	  8 C :       1.8500  ang
+	  9 C :       1.8500  ang
+	 10 H :       1.2000  ang
+	 11 H :       1.2000  ang
+	 12 H :       1.2000  ang
+	 13 H :       1.2000  ang
+	 14 H :       1.2000  ang
+	 15 H :       1.2000  ang
+	 16 H :       1.2000  ang
+	 17 H :       1.2000  ang
+	 18 H :       1.2000  ang
+	 19 H :       1.2000  ang
+	 20 H :       1.2000  ang
+	 21 H :       1.2000  ang
+	 22 H :       1.2000  ang
+	 23 H :       1.2000  ang
+ Solvent Alpha                       : 1.1700000000 
+
+ ## Effective Born Radius (bohr) ##
+   0   4.3355160224 
+   1   3.6673506413 
+   2   4.6116855314 
+   3   4.5494527143 
+   4   4.4005844998 
+   5   4.4782545187 
+   6   4.0373700914 
+   7   4.2694576558 
+   8   3.9084835459 
+   9   3.6429471228 
+  10   3.6431305422 
+  11   3.5718218232 
+  12   3.5720685178 
+  13   3.4901423558 
+  14   3.4901159857 
+  15   3.5397103801 
+  16   3.5390439656 
+  17   3.2111770681 
+  18   3.2111139462 
+  19   3.1194241487 
+  20   3.1198477065 
+  21   3.1202089702 
+  22   3.1054966210 
+
+ Effective Born Radii:
+	  1 O :       2.2943  ang
+	  2 O :       1.9407  ang
+	  3 C :       2.4404  ang
+	  4 C :       2.4075  ang
+	  5 C :       2.3287  ang
+	  6 C :       2.3698  ang
+	  7 C :       2.1365  ang
+	  8 C :       2.2593  ang
+	  9 C :       2.0683  ang
+	 10 H :       1.9278  ang
+	 11 H :       1.9279  ang
+	 12 H :       1.8901  ang
+	 13 H :       1.8903  ang
+	 14 H :       1.8469  ang
+	 15 H :       1.8469  ang
+	 16 H :       1.8731  ang
+	 17 H :       1.8728  ang
+	 18 H :       1.6993  ang
+	 19 H :       1.6992  ang
+	 20 H :       1.6507  ang
+	 21 H :       1.6510  ang
+	 22 H :       1.6511  ang
+	 23 H :       1.6434  ang
+
+
+ Coulomb Integrals:
+	  1  1 :       0.2307  bohr^-1
+	  1  2 :       0.1814  bohr^-1
+	  1  3 :       0.1284  bohr^-1
+	  1  4 :       0.1681  bohr^-1
+	  1  5 :       0.1043  bohr^-1
+	  1  6 :       0.2005  bohr^-1
+	  1  7 :       0.0842  bohr^-1
+	  1  8 :       0.2066  bohr^-1
+	  1  9 :       0.1768  bohr^-1
+	  1 10 :       0.1243  bohr^-1
+	  1 11 :       0.1243  bohr^-1
+	  1 12 :       0.1700  bohr^-1
+	  1 13 :       0.1700  bohr^-1
+	  1 14 :       0.1033  bohr^-1
+	  1 15 :       0.1033  bohr^-1
+	  1 16 :       0.1921  bohr^-1
+	  1 17 :       0.1922  bohr^-1
+	  1 18 :       0.0817  bohr^-1
+	  1 19 :       0.0817  bohr^-1
+	  1 20 :       0.0748  bohr^-1
+	  1 21 :       0.1746  bohr^-1
+	  1 22 :       0.1747  bohr^-1
+	  1 23 :       0.1497  bohr^-1
+	  2  1 :       0.1814  bohr^-1
+	  2  2 :       0.2727  bohr^-1
+	  2  3 :       0.1014  bohr^-1
+	  2  4 :       0.1209  bohr^-1
+	  2  5 :       0.0805  bohr^-1
+	  2  6 :       0.1658  bohr^-1
+	  2  7 :       0.0695  bohr^-1
+	  2  8 :       0.2258  bohr^-1
+	  2  9 :       0.1812  bohr^-1
+	  2 10 :       0.1024  bohr^-1
+	  2 11 :       0.1025  bohr^-1
+	  2 12 :       0.1134  bohr^-1
+	  2 13 :       0.1134  bohr^-1
+	  2 14 :       0.0775  bohr^-1
+	  2 15 :       0.0776  bohr^-1
+	  2 16 :       0.1748  bohr^-1
+	  2 17 :       0.1747  bohr^-1
+	  2 18 :       0.0692  bohr^-1
+	  2 19 :       0.0692  bohr^-1
+	  2 20 :       0.0616  bohr^-1
+	  2 21 :       0.1592  bohr^-1
+	  2 22 :       0.1591  bohr^-1
+	  2 23 :       0.1831  bohr^-1
+	  3  1 :       0.1284  bohr^-1
+	  3  2 :       0.1014  bohr^-1
+	  3  3 :       0.2168  bohr^-1
+	  3  4 :       0.1918  bohr^-1
+	  3  5 :       0.1942  bohr^-1
+	  3  6 :       0.1620  bohr^-1
+	  3  7 :       0.1665  bohr^-1
+	  3  8 :       0.1050  bohr^-1
+	  3  9 :       0.0859  bohr^-1
+	  3 10 :       0.2238  bohr^-1
+	  3 11 :       0.2237  bohr^-1
+	  3 12 :       0.1848  bohr^-1
+	  3 13 :       0.1848  bohr^-1
+	  3 14 :       0.1861  bohr^-1
+	  3 15 :       0.1862  bohr^-1
+	  3 16 :       0.1624  bohr^-1
+	  3 17 :       0.1624  bohr^-1
+	  3 18 :       0.1653  bohr^-1
+	  3 19 :       0.1653  bohr^-1
+	  3 20 :       0.1422  bohr^-1
+	  3 21 :       0.0841  bohr^-1
+	  3 22 :       0.0842  bohr^-1
+	  3 23 :       0.0758  bohr^-1
+	  4  1 :       0.1681  bohr^-1
+	  4  2 :       0.1209  bohr^-1
+	  4  3 :       0.1918  bohr^-1
+	  4  4 :       0.2198  bohr^-1
+	  4  5 :       0.1634  bohr^-1
+	  4  6 :       0.1941  bohr^-1
+	  4  7 :       0.1270  bohr^-1
+	  4  8 :       0.1318  bohr^-1
+	  4  9 :       0.1085  bohr^-1
+	  4 10 :       0.1848  bohr^-1
+	  4 11 :       0.1848  bohr^-1
+	  4 12 :       0.2269  bohr^-1
+	  4 13 :       0.2269  bohr^-1
+	  4 14 :       0.1641  bohr^-1
+	  4 15 :       0.1641  bohr^-1
+	  4 16 :       0.1861  bohr^-1
+	  4 17 :       0.1861  bohr^-1
+	  4 18 :       0.1217  bohr^-1
+	  4 19 :       0.1217  bohr^-1
+	  4 20 :       0.1109  bohr^-1
+	  4 21 :       0.1074  bohr^-1
+	  4 22 :       0.1075  bohr^-1
+	  4 23 :       0.0927  bohr^-1
+	  5  1 :       0.1043  bohr^-1
+	  5  2 :       0.0805  bohr^-1
+	  5  3 :       0.1942  bohr^-1
+	  5  4 :       0.1634  bohr^-1
+	  5  5 :       0.2272  bohr^-1
+	  5  6 :       0.1257  bohr^-1
+	  5  7 :       0.2044  bohr^-1
+	  5  8 :       0.0852  bohr^-1
+	  5  9 :       0.0729  bohr^-1
+	  5 10 :       0.1865  bohr^-1
+	  5 11 :       0.1865  bohr^-1
+	  5 12 :       0.1643  bohr^-1
+	  5 13 :       0.1644  bohr^-1
+	  5 14 :       0.2323  bohr^-1
+	  5 15 :       0.2323  bohr^-1
+	  5 16 :       0.1213  bohr^-1
+	  5 17 :       0.1213  bohr^-1
+	  5 18 :       0.1923  bohr^-1
+	  5 19 :       0.1923  bohr^-1
+	  5 20 :       0.1941  bohr^-1
+	  5 21 :       0.0724  bohr^-1
+	  5 22 :       0.0725  bohr^-1
+	  5 23 :       0.0646  bohr^-1
+	  6  1 :       0.2005  bohr^-1
+	  6  2 :       0.1658  bohr^-1
+	  6  3 :       0.1620  bohr^-1
+	  6  4 :       0.1941  bohr^-1
+	  6  5 :       0.1257  bohr^-1
+	  6  6 :       0.2233  bohr^-1
+	  6  7 :       0.1023  bohr^-1
+	  6  8 :       0.1711  bohr^-1
+	  6  9 :       0.1333  bohr^-1
+	  6 10 :       0.1632  bohr^-1
+	  6 11 :       0.1632  bohr^-1
+	  6 12 :       0.1868  bohr^-1
+	  6 13 :       0.1868  bohr^-1
+	  6 14 :       0.1216  bohr^-1
+	  6 15 :       0.1216  bohr^-1
+	  6 16 :       0.2293  bohr^-1
+	  6 17 :       0.2293  bohr^-1
+	  6 18 :       0.1005  bohr^-1
+	  6 19 :       0.1005  bohr^-1
+	  6 20 :       0.0882  bohr^-1
+	  6 21 :       0.1280  bohr^-1
+	  6 22 :       0.1281  bohr^-1
+	  6 23 :       0.1157  bohr^-1
+	  7  1 :       0.0842  bohr^-1
+	  7  2 :       0.0695  bohr^-1
+	  7  3 :       0.1665  bohr^-1
+	  7  4 :       0.1270  bohr^-1
+	  7  5 :       0.2044  bohr^-1
+	  7  6 :       0.1023  bohr^-1
+	  7  7 :       0.2477  bohr^-1
+	  7  8 :       0.0715  bohr^-1
+	  7  9 :       0.0616  bohr^-1
+	  7 10 :       0.1667  bohr^-1
+	  7 11 :       0.1667  bohr^-1
+	  7 12 :       0.1224  bohr^-1
+	  7 13 :       0.1225  bohr^-1
+	  7 14 :       0.1934  bohr^-1
+	  7 15 :       0.1934  bohr^-1
+	  7 16 :       0.1007  bohr^-1
+	  7 17 :       0.1007  bohr^-1
+	  7 18 :       0.2489  bohr^-1
+	  7 19 :       0.2489  bohr^-1
+	  7 20 :       0.2518  bohr^-1
+	  7 21 :       0.0609  bohr^-1
+	  7 22 :       0.0610  bohr^-1
+	  7 23 :       0.0558  bohr^-1
+	  8  1 :       0.2066  bohr^-1
+	  8  2 :       0.2258  bohr^-1
+	  8  3 :       0.1050  bohr^-1
+	  8  4 :       0.1318  bohr^-1
+	  8  5 :       0.0852  bohr^-1
+	  8  6 :       0.1711  bohr^-1
+	  8  7 :       0.0715  bohr^-1
+	  8  8 :       0.2342  bohr^-1
+	  8  9 :       0.2100  bohr^-1
+	  8 10 :       0.1035  bohr^-1
+	  8 11 :       0.1035  bohr^-1
+	  8 12 :       0.1288  bohr^-1
+	  8 13 :       0.1288  bohr^-1
+	  8 14 :       0.0834  bohr^-1
+	  8 15 :       0.0834  bohr^-1
+	  8 16 :       0.1707  bohr^-1
+	  8 17 :       0.1707  bohr^-1
+	  8 18 :       0.0703  bohr^-1
+	  8 19 :       0.0703  bohr^-1
+	  8 20 :       0.0639  bohr^-1
+	  8 21 :       0.1968  bohr^-1
+	  8 22 :       0.1968  bohr^-1
+	  8 23 :       0.1973  bohr^-1
+	  9  1 :       0.1768  bohr^-1
+	  9  2 :       0.1812  bohr^-1
+	  9  3 :       0.0859  bohr^-1
+	  9  4 :       0.1085  bohr^-1
+	  9  5 :       0.0729  bohr^-1
+	  9  6 :       0.1333  bohr^-1
+	  9  7 :       0.0616  bohr^-1
+	  9  8 :       0.2100  bohr^-1
+	  9  9 :       0.2559  bohr^-1
+	  9 10 :       0.0833  bohr^-1
+	  9 11 :       0.0833  bohr^-1
+	  9 12 :       0.1087  bohr^-1
+	  9 13 :       0.1087  bohr^-1
+	  9 14 :       0.0725  bohr^-1
+	  9 15 :       0.0725  bohr^-1
+	  9 16 :       0.1273  bohr^-1
+	  9 17 :       0.1273  bohr^-1
+	  9 18 :       0.0603  bohr^-1
+	  9 19 :       0.0603  bohr^-1
+	  9 20 :       0.0563  bohr^-1
+	  9 21 :       0.2552  bohr^-1
+	  9 22 :       0.2552  bohr^-1
+	  9 23 :       0.2556  bohr^-1
+	 10  1 :       0.1243  bohr^-1
+	 10  2 :       0.1024  bohr^-1
+	 10  3 :       0.2238  bohr^-1
+	 10  4 :       0.1848  bohr^-1
+	 10  5 :       0.1865  bohr^-1
+	 10  6 :       0.1632  bohr^-1
+	 10  7 :       0.1667  bohr^-1
+	 10  8 :       0.1035  bohr^-1
+	 10  9 :       0.0833  bohr^-1
+	 10 10 :       0.2745  bohr^-1
+	 10 11 :       0.2146  bohr^-1
+	 10 12 :       0.1803  bohr^-1
+	 10 13 :       0.1578  bohr^-1
+	 10 14 :       0.1815  bohr^-1
+	 10 15 :       0.1585  bohr^-1
+	 10 16 :       0.1564  bohr^-1
+	 10 17 :       0.1789  bohr^-1
+	 10 18 :       0.1584  bohr^-1
+	 10 19 :       0.1819  bohr^-1
+	 10 20 :       0.1364  bohr^-1
+	 10 21 :       0.0822  bohr^-1
+	 10 22 :       0.0793  bohr^-1
+	 10 23 :       0.0742  bohr^-1
+	 11  1 :       0.1243  bohr^-1
+	 11  2 :       0.1025  bohr^-1
+	 11  3 :       0.2237  bohr^-1
+	 11  4 :       0.1848  bohr^-1
+	 11  5 :       0.1865  bohr^-1
+	 11  6 :       0.1632  bohr^-1
+	 11  7 :       0.1667  bohr^-1
+	 11  8 :       0.1035  bohr^-1
+	 11  9 :       0.0833  bohr^-1
+	 11 10 :       0.2146  bohr^-1
+	 11 11 :       0.2745  bohr^-1
+	 11 12 :       0.1578  bohr^-1
+	 11 13 :       0.1803  bohr^-1
+	 11 14 :       0.1585  bohr^-1
+	 11 15 :       0.1815  bohr^-1
+	 11 16 :       0.1790  bohr^-1
+	 11 17 :       0.1565  bohr^-1
+	 11 18 :       0.1819  bohr^-1
+	 11 19 :       0.1584  bohr^-1
+	 11 20 :       0.1364  bohr^-1
+	 11 21 :       0.0792  bohr^-1
+	 11 22 :       0.0822  bohr^-1
+	 11 23 :       0.0743  bohr^-1
+	 12  1 :       0.1700  bohr^-1
+	 12  2 :       0.1134  bohr^-1
+	 12  3 :       0.1848  bohr^-1
+	 12  4 :       0.2269  bohr^-1
+	 12  5 :       0.1643  bohr^-1
+	 12  6 :       0.1868  bohr^-1
+	 12  7 :       0.1224  bohr^-1
+	 12  8 :       0.1288  bohr^-1
+	 12  9 :       0.1087  bohr^-1
+	 12 10 :       0.1803  bohr^-1
+	 12 11 :       0.1578  bohr^-1
+	 12 12 :       0.2800  bohr^-1
+	 12 13 :       0.2179  bohr^-1
+	 12 14 :       0.1809  bohr^-1
+	 12 15 :       0.1581  bohr^-1
+	 12 16 :       0.1587  bohr^-1
+	 12 17 :       0.1821  bohr^-1
+	 12 18 :       0.1106  bohr^-1
+	 12 19 :       0.1185  bohr^-1
+	 12 20 :       0.1084  bohr^-1
+	 12 21 :       0.1125  bohr^-1
+	 12 22 :       0.1056  bohr^-1
+	 12 23 :       0.0913  bohr^-1
+	 13  1 :       0.1700  bohr^-1
+	 13  2 :       0.1134  bohr^-1
+	 13  3 :       0.1848  bohr^-1
+	 13  4 :       0.2269  bohr^-1
+	 13  5 :       0.1644  bohr^-1
+	 13  6 :       0.1868  bohr^-1
+	 13  7 :       0.1225  bohr^-1
+	 13  8 :       0.1288  bohr^-1
+	 13  9 :       0.1087  bohr^-1
+	 13 10 :       0.1578  bohr^-1
+	 13 11 :       0.1803  bohr^-1
+	 13 12 :       0.2179  bohr^-1
+	 13 13 :       0.2799  bohr^-1
+	 13 14 :       0.1582  bohr^-1
+	 13 15 :       0.1809  bohr^-1
+	 13 16 :       0.1821  bohr^-1
+	 13 17 :       0.1587  bohr^-1
+	 13 18 :       0.1185  bohr^-1
+	 13 19 :       0.1106  bohr^-1
+	 13 20 :       0.1084  bohr^-1
+	 13 21 :       0.1054  bohr^-1
+	 13 22 :       0.1126  bohr^-1
+	 13 23 :       0.0913  bohr^-1
+	 14  1 :       0.1033  bohr^-1
+	 14  2 :       0.0775  bohr^-1
+	 14  3 :       0.1861  bohr^-1
+	 14  4 :       0.1641  bohr^-1
+	 14  5 :       0.2323  bohr^-1
+	 14  6 :       0.1216  bohr^-1
+	 14  7 :       0.1934  bohr^-1
+	 14  8 :       0.0834  bohr^-1
+	 14  9 :       0.0725  bohr^-1
+	 14 10 :       0.1815  bohr^-1
+	 14 11 :       0.1585  bohr^-1
+	 14 12 :       0.1809  bohr^-1
+	 14 13 :       0.1582  bohr^-1
+	 14 14 :       0.2865  bohr^-1
+	 14 15 :       0.2201  bohr^-1
+	 14 16 :       0.1105  bohr^-1
+	 14 17 :       0.1185  bohr^-1
+	 14 18 :       0.1611  bohr^-1
+	 14 19 :       0.1860  bohr^-1
+	 14 20 :       0.1884  bohr^-1
+	 14 21 :       0.0736  bohr^-1
+	 14 22 :       0.0715  bohr^-1
+	 14 23 :       0.0639  bohr^-1
+	 15  1 :       0.1033  bohr^-1
+	 15  2 :       0.0776  bohr^-1
+	 15  3 :       0.1862  bohr^-1
+	 15  4 :       0.1641  bohr^-1
+	 15  5 :       0.2323  bohr^-1
+	 15  6 :       0.1216  bohr^-1
+	 15  7 :       0.1934  bohr^-1
+	 15  8 :       0.0834  bohr^-1
+	 15  9 :       0.0725  bohr^-1
+	 15 10 :       0.1585  bohr^-1
+	 15 11 :       0.1815  bohr^-1
+	 15 12 :       0.1581  bohr^-1
+	 15 13 :       0.1809  bohr^-1
+	 15 14 :       0.2201  bohr^-1
+	 15 15 :       0.2865  bohr^-1
+	 15 16 :       0.1185  bohr^-1
+	 15 17 :       0.1105  bohr^-1
+	 15 18 :       0.1860  bohr^-1
+	 15 19 :       0.1611  bohr^-1
+	 15 20 :       0.1884  bohr^-1
+	 15 21 :       0.0714  bohr^-1
+	 15 22 :       0.0736  bohr^-1
+	 15 23 :       0.0639  bohr^-1
+	 16  1 :       0.1921  bohr^-1
+	 16  2 :       0.1748  bohr^-1
+	 16  3 :       0.1624  bohr^-1
+	 16  4 :       0.1861  bohr^-1
+	 16  5 :       0.1213  bohr^-1
+	 16  6 :       0.2293  bohr^-1
+	 16  7 :       0.1007  bohr^-1
+	 16  8 :       0.1707  bohr^-1
+	 16  9 :       0.1273  bohr^-1
+	 16 10 :       0.1564  bohr^-1
+	 16 11 :       0.1790  bohr^-1
+	 16 12 :       0.1587  bohr^-1
+	 16 13 :       0.1821  bohr^-1
+	 16 14 :       0.1105  bohr^-1
+	 16 15 :       0.1185  bohr^-1
+	 16 16 :       0.2825  bohr^-1
+	 16 17 :       0.2169  bohr^-1
+	 16 18 :       0.1028  bohr^-1
+	 16 19 :       0.0972  bohr^-1
+	 16 20 :       0.0857  bohr^-1
+	 16 21 :       0.1148  bohr^-1
+	 16 22 :       0.1241  bohr^-1
+	 16 23 :       0.1122  bohr^-1
+	 17  1 :       0.1922  bohr^-1
+	 17  2 :       0.1747  bohr^-1
+	 17  3 :       0.1624  bohr^-1
+	 17  4 :       0.1861  bohr^-1
+	 17  5 :       0.1213  bohr^-1
+	 17  6 :       0.2293  bohr^-1
+	 17  7 :       0.1007  bohr^-1
+	 17  8 :       0.1707  bohr^-1
+	 17  9 :       0.1273  bohr^-1
+	 17 10 :       0.1789  bohr^-1
+	 17 11 :       0.1565  bohr^-1
+	 17 12 :       0.1821  bohr^-1
+	 17 13 :       0.1587  bohr^-1
+	 17 14 :       0.1185  bohr^-1
+	 17 15 :       0.1105  bohr^-1
+	 17 16 :       0.2169  bohr^-1
+	 17 17 :       0.2826  bohr^-1
+	 17 18 :       0.0973  bohr^-1
+	 17 19 :       0.1028  bohr^-1
+	 17 20 :       0.0857  bohr^-1
+	 17 21 :       0.1241  bohr^-1
+	 17 22 :       0.1148  bohr^-1
+	 17 23 :       0.1121  bohr^-1
+	 18  1 :       0.0817  bohr^-1
+	 18  2 :       0.0692  bohr^-1
+	 18  3 :       0.1653  bohr^-1
+	 18  4 :       0.1217  bohr^-1
+	 18  5 :       0.1923  bohr^-1
+	 18  6 :       0.1005  bohr^-1
+	 18  7 :       0.2489  bohr^-1
+	 18  8 :       0.0703  bohr^-1
+	 18  9 :       0.0603  bohr^-1
+	 18 10 :       0.1584  bohr^-1
+	 18 11 :       0.1819  bohr^-1
+	 18 12 :       0.1106  bohr^-1
+	 18 13 :       0.1185  bohr^-1
+	 18 14 :       0.1611  bohr^-1
+	 18 15 :       0.1860  bohr^-1
+	 18 16 :       0.1028  bohr^-1
+	 18 17 :       0.0973  bohr^-1
+	 18 18 :       0.3114  bohr^-1
+	 18 19 :       0.2299  bohr^-1
+	 18 20 :       0.2318  bohr^-1
+	 18 21 :       0.0587  bohr^-1
+	 18 22 :       0.0599  bohr^-1
+	 18 23 :       0.0549  bohr^-1
+	 19  1 :       0.0817  bohr^-1
+	 19  2 :       0.0692  bohr^-1
+	 19  3 :       0.1653  bohr^-1
+	 19  4 :       0.1217  bohr^-1
+	 19  5 :       0.1923  bohr^-1
+	 19  6 :       0.1005  bohr^-1
+	 19  7 :       0.2489  bohr^-1
+	 19  8 :       0.0703  bohr^-1
+	 19  9 :       0.0603  bohr^-1
+	 19 10 :       0.1819  bohr^-1
+	 19 11 :       0.1584  bohr^-1
+	 19 12 :       0.1185  bohr^-1
+	 19 13 :       0.1106  bohr^-1
+	 19 14 :       0.1860  bohr^-1
+	 19 15 :       0.1611  bohr^-1
+	 19 16 :       0.0972  bohr^-1
+	 19 17 :       0.1028  bohr^-1
+	 19 18 :       0.2299  bohr^-1
+	 19 19 :       0.3114  bohr^-1
+	 19 20 :       0.2318  bohr^-1
+	 19 21 :       0.0599  bohr^-1
+	 19 22 :       0.0587  bohr^-1
+	 19 23 :       0.0549  bohr^-1
+	 20  1 :       0.0748  bohr^-1
+	 20  2 :       0.0616  bohr^-1
+	 20  3 :       0.1422  bohr^-1
+	 20  4 :       0.1109  bohr^-1
+	 20  5 :       0.1941  bohr^-1
+	 20  6 :       0.0882  bohr^-1
+	 20  7 :       0.2518  bohr^-1
+	 20  8 :       0.0639  bohr^-1
+	 20  9 :       0.0563  bohr^-1
+	 20 10 :       0.1364  bohr^-1
+	 20 11 :       0.1364  bohr^-1
+	 20 12 :       0.1084  bohr^-1
+	 20 13 :       0.1084  bohr^-1
+	 20 14 :       0.1884  bohr^-1
+	 20 15 :       0.1884  bohr^-1
+	 20 16 :       0.0857  bohr^-1
+	 20 17 :       0.0857  bohr^-1
+	 20 18 :       0.2318  bohr^-1
+	 20 19 :       0.2318  bohr^-1
+	 20 20 :       0.3206  bohr^-1
+	 20 21 :       0.0560  bohr^-1
+	 20 22 :       0.0561  bohr^-1
+	 20 23 :       0.0512  bohr^-1
+	 21  1 :       0.1746  bohr^-1
+	 21  2 :       0.1592  bohr^-1
+	 21  3 :       0.0841  bohr^-1
+	 21  4 :       0.1074  bohr^-1
+	 21  5 :       0.0724  bohr^-1
+	 21  6 :       0.1280  bohr^-1
+	 21  7 :       0.0609  bohr^-1
+	 21  8 :       0.1968  bohr^-1
+	 21  9 :       0.2552  bohr^-1
+	 21 10 :       0.0822  bohr^-1
+	 21 11 :       0.0792  bohr^-1
+	 21 12 :       0.1125  bohr^-1
+	 21 13 :       0.1054  bohr^-1
+	 21 14 :       0.0736  bohr^-1
+	 21 15 :       0.0714  bohr^-1
+	 21 16 :       0.1148  bohr^-1
+	 21 17 :       0.1241  bohr^-1
+	 21 18 :       0.0587  bohr^-1
+	 21 19 :       0.0599  bohr^-1
+	 21 20 :       0.0560  bohr^-1
+	 21 21 :       0.3205  bohr^-1
+	 21 22 :       0.2318  bohr^-1
+	 21 23 :       0.2335  bohr^-1
+	 22  1 :       0.1747  bohr^-1
+	 22  2 :       0.1591  bohr^-1
+	 22  3 :       0.0842  bohr^-1
+	 22  4 :       0.1075  bohr^-1
+	 22  5 :       0.0725  bohr^-1
+	 22  6 :       0.1281  bohr^-1
+	 22  7 :       0.0610  bohr^-1
+	 22  8 :       0.1968  bohr^-1
+	 22  9 :       0.2552  bohr^-1
+	 22 10 :       0.0793  bohr^-1
+	 22 11 :       0.0822  bohr^-1
+	 22 12 :       0.1056  bohr^-1
+	 22 13 :       0.1126  bohr^-1
+	 22 14 :       0.0715  bohr^-1
+	 22 15 :       0.0736  bohr^-1
+	 22 16 :       0.1241  bohr^-1
+	 22 17 :       0.1148  bohr^-1
+	 22 18 :       0.0599  bohr^-1
+	 22 19 :       0.0587  bohr^-1
+	 22 20 :       0.0561  bohr^-1
+	 22 21 :       0.2318  bohr^-1
+	 22 22 :       0.3205  bohr^-1
+	 22 23 :       0.2335  bohr^-1
+	 23  1 :       0.1497  bohr^-1
+	 23  2 :       0.1831  bohr^-1
+	 23  3 :       0.0758  bohr^-1
+	 23  4 :       0.0927  bohr^-1
+	 23  5 :       0.0646  bohr^-1
+	 23  6 :       0.1157  bohr^-1
+	 23  7 :       0.0558  bohr^-1
+	 23  8 :       0.1973  bohr^-1
+	 23  9 :       0.2556  bohr^-1
+	 23 10 :       0.0742  bohr^-1
+	 23 11 :       0.0743  bohr^-1
+	 23 12 :       0.0913  bohr^-1
+	 23 13 :       0.0913  bohr^-1
+	 23 14 :       0.0639  bohr^-1
+	 23 15 :       0.0639  bohr^-1
+	 23 16 :       0.1122  bohr^-1
+	 23 17 :       0.1121  bohr^-1
+	 23 18 :       0.0549  bohr^-1
+	 23 19 :       0.0549  bohr^-1
+	 23 20 :       0.0512  bohr^-1
+	 23 21 :       0.2335  bohr^-1
+	 23 22 :       0.2335  bohr^-1
+	 23 23 :       0.3220  bohr^-1
+
+
+	*Molecular contr. to CDS energy:       0.0000  kcal/mol
+	*Total CDS energy:       5.2508  kcal/mol
+	*MP2::Polarization Free Energy (au)      : -0.0152112237 
+	*MP2::Polarization Free Energy (kcal/mol):      -9.5452 
+	*MP2::CDS Free Energy (au)      : 0.0083676991 
+	*MP2::CDS Free Energy (kcal/mol):       5.2508 
+	*MP2::Total Solvation Free Energy (au)      : -0.0068435246 
+	*MP2::Total Solvation Free Energy (kcal/mol):      -4.2944 
+	GB-MP2 Total Energy (a.u.)         :  -424.37807552562390
+
+	*Total GB-MP2 Energy: -424.37123200104156
+
+
+ Cpu time for MacroQC :       4.2627 minutes
+ Wall time for MacroQC:       1.6832 minutes
+
+
+ ******************************************************************************************
+	 MacroQC terminates normally:) 
+ ****************************************************************************************** 
+

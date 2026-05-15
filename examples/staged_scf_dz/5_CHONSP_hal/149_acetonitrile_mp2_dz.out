@@ -1,0 +1,965 @@
+ ==========================================================================================
+ =========                __  ___                         ____  ______            =========
+ ======                  /  |/  /___ _______________     / __ \/ ____/               ======
+ ====                   / /|_/ / __ `/ ___/ ___/ __ \   / / / / /                      ====
+ ===                   / /  / / /_/ / /__/ /  / /_/ /  / /_/ / /___                     ===
+ ==                   /_/  /_/\__,_/\___/_/   \____/   \___\_\____/                      ==
+ ===                                                                1.0.4                ===
+ =====     An electronic structure theory software for large-scale applications       =====
+ ======                                 See license.txt for license info             ======
+ =========                                                                        =========
+ ==========================================================================================
+                                                                                           
+                           * * * * * * * * * * * * * * * * * * * *                        
+                           *            Developed by             *                        
+                           *             U. Bozkaya              *                        
+                           *                                     *                        
+                           *       With contributions from:      *                        
+                           *         B. Ermis, Y. Alagoz,        *                        
+                           *         A. Unal, and A. K. Uyar     *                        
+                           *         Git Version: deab493        *                        
+                           *       Latest Revision: 2026-03-23   *                        
+                           * * * * * * * * * * * * * * * * * * * *                        
+
+
+ Run date: Wed Mar 25 09:34:55 2026
+ 
+ Hostname: ub8 
+
+ ## MacroQC input file ##
+ ******************************************************************************************
+$set_molecule
+0 1
+N       1.4302680183     0.0000044074     0.0000010562
+C      -1.1739954987     0.0000107708    -0.0000022314
+C       0.2806478452    -0.0000462114     0.0000129122
+H      -1.5503302207     1.0138740705    -0.1326893630
+H      -1.5507902692    -0.3919431507     0.9442111338
+H      -1.5506697172    -0.6217491281    -0.8115932489
+$end_molecule
+
+
+$set_globals
+   basis cc-pvdz
+  method mp2
+  reference rhf
+  jobtype energy
+  memory 30000
+$end_globals
+
+
+$set_scf
+  e_convergence 1.0e-8
+  d_convergence 1.0e-6
+  guess sad
+  solvation true
+$end_scf
+
+
+$set_solvation
+  cds_type smd
+  radius_type smd
+  solvent_params mn21
+  dielectric_params mn21 #sm8
+  sasa_type numeric
+  solvent water
+  num_ang_points 100
+  charge_type iao_mulliken #iao_lowdin, mulliken, lowdin
+  coulomb_radii smd
+$end_solvation
+
+$set_dfocc
+solvation true
+$end_dfocc
+
+ ******************************************************************************************
+
+
+	-Geometry before Center-of-Mass shift (ang): 
+	 Number     Atom               X                    Y                       Z  
+	 ---------------------------------------------------------------------------------------
+           1     N             1.4302680183          0.0000044074           0.0000010562  
+           2     C            -1.1739954987          0.0000107708          -0.0000022314  
+           3     C             0.2806478452         -0.0000462114           0.0000129122  
+           4     H            -1.5503302207          1.0138740705          -0.1326893630  
+           5     H            -1.5507902692         -0.3919431507           0.9442111338  
+           6     H            -1.5506697172         -0.6217491281          -0.8115932489  
+
+
+
+	-Geometry after Center-of-Mass shift (ang): 
+	 Atom               X                    Y                       Z  
+	 -------------------------------------------------------------------
+     N           1.3176632160          0.0000088035          -0.0000006725  
+     C          -1.2866003010          0.0000151669          -0.0000039601  
+     C           0.1680430429         -0.0000418153           0.0000111835  
+     H          -1.6629350230          1.0138784666          -0.1326910917  
+     H          -1.6633950715         -0.3919387546           0.9442094051  
+     H          -1.6632745195         -0.6217447320          -0.8115949776  
+
+
+	-Geometry after Center-of-Mass shift (bohr): 
+	 Atom               X                    Y                       Z  
+	 -------------------------------------------------------------------
+     N           2.4900226038          0.0000166362          -0.0000012708  
+     C          -2.4313222018          0.0000286612          -0.0000074835  
+     C           0.3175553284         -0.0000790195           0.0000211338  
+     H          -3.1424917579          1.9159526263          -0.2507498226  
+     H          -3.1433611236         -0.7406569042           1.7842971807  
+     H          -3.1431333133         -1.1749272635          -1.5336922324  
+
+
+    Rotational Constants: A =     5.33386  B =     0.30955  C =      0.30954 [cm^-1] 
+    Rotor Type: SYMMETRIC 
+
+	-Nuclear Dipole Moment: (e a0)  
+	 X:  -4.68143   Y:  0.00018   Z:  -0.00007   Total:  4.68143 
+
+	-Nuclear Dipole Moment: (D)  
+	 X:  -11.89901   Y:  0.00046   Z:  -0.00018   Total:  11.89901 
+
+
+    Nuclear repulsion energy (V_NN)              : 58.669997727990 
+   =====================================================
+   Charge                : 0 
+   Multiplicity          : 1 
+   Number of Atoms       : 6 
+   Number of Ghost Atoms : 0 
+   Number of Electrons   : 22 
+   Number of alpha occupied orbitals (NoccA)  : 11 
+   Number of beta occupied orbitals (NoccB)   : 11 
+   Number of singly occupied orbitals (Nsocc) : 0 
+   Number of doubly occupied orbitals (Ndocc) : 11 
+   =====================================================
+
+
+
+  ## GLOBALS Options ##
+
+  | TYPE         | KEY                      | INPUT? | VALUE              | DEFAULT            
+  |--------------|--------------------------|--------|--------------------|--------------------
+  | BOOL         | ERI_DISK                 | NO     | FALSE              | FALSE              
+  | BOOL         | FREEZE_CORE              | NO     | TRUE               | TRUE               
+  | BOOL         | MOL_FRAG                 | NO     | FALSE              | FALSE              
+  | BOOL         | NOCOM                    | NO     | FALSE              | FALSE              
+  | BOOL         | NOREORIENT               | NO     | TRUE               | TRUE               
+  | BOOL         | PUREAM                   | NO     | TRUE               | TRUE               
+  | BOOL         | ML                       | NO     | FALSE              | FALSE              
+  | BOOL         | READ_PDB                 | NO     | FALSE              | FALSE              
+  | BOOL         | TEST_MODE                | NO     | FALSE              | FALSE              
+  | INT          | DERIVE_LEVEL             | NO     | 0                  | 0                  
+  | INT          | FINDIF_POINTS            | NO     | 3                  | 3                  
+  | INT          | MEMORY                   | YES    | 30000              | 2000               
+  | INT          | NUM_THREADS              | NO     | 1                  | 1                  
+  | INT          | NUM_FROZEN_DOCC          | NO     | 0                  | 0                  
+  | INT          | NUM_FROZEN_VIR           | NO     | 0                  | 0                  
+  | INT          | PRINT_LEVEL              | NO     | 0                  | 0                  
+  | STRING       | AUX_BASIS_CORR           | NO     | CC-PVDZ-RI         | CC-PVDZ-RI         
+  | STRING       | AUX_BASIS_SCF            | NO     | CC-PVDZ-JKFIT      | CC-PVDZ-JKFIT      
+  | STRING       | BASIS                    | YES    | CC-PVDZ            | CC-PVDZ            
+  | STRING       | BASIS2                   | NO     | MINAO              | MINAO              
+  | STRING       | DERIVE_TYPE              | NO     | ANALYTIC           | ANALYTIC           
+  | STRING       | FINDIF_METHOD            | NO     | GRAD               | GRAD               
+  | STRING       | GEOM_UNITS               | NO     | ANG                | ANG                
+  | STRING       | JOBTYPE                  | YES    | ENERGY             | ENERGY             
+  | STRING       | METHOD                   | YES    | MP2                | SCF                
+  | STRING       | REFERENCE                | YES    | RHF                | RHF                
+  | STRING       | OUTFILE_MODE             | NO     | NEW                | NEW                
+  | DOUBLE       | STEP_BOHR                | NO     | 0.05               | 0.05               
+  | STR_ARRAY    | MOLECULE_GEOM_FROM       | NO     | [input]            | [input]            
+  | DOUBLE_ARRAY | ELECTRIC_STRENGTH        | NO     | [0.001;0.001;0.001]| [0.001;0.001;0.001]
+  | STRING       | ELECTRIC_FIELD           | NO     | NONE               | NONE               
+  | STRING       | ALIGN_TWO_ATOMS          | NO     | NONE               | NONE               
+  | INT_ARRAY    | TWO_ATOMS                | NO     | [0]                | [0]                
+
+
+
+  ## INTS Options ##
+
+  | TYPE         | KEY                      | INPUT? | VALUE              | DEFAULT            
+  |--------------|--------------------------|--------|--------------------|--------------------
+  | DOUBLE       | BOYS_CUTOFF              | NO     | 1e-15              | 1e-15              
+  | DOUBLE       | BOYS_ZERO                | NO     | 1e-06              | 1e-06              
+  | DOUBLE       | DELTA_X                  | NO     | 0.1                | 0.1                
+  | DOUBLE       | INTEGRAL_CUTOFF          | NO     | 1e-10              | 1e-10              
+  | DOUBLE       | X_MAX                    | NO     | 30.0               | 30.0               
+  | INT          | BOYS_MAXITER             | NO     | 10000              | 10000              
+  | INT          | MAX_AM                   | NO     | 7                  | 7                  
+  | INT          | MAX_AM_AUX               | NO     | 7                  | 7                  
+  | INT          | PRINT_LEVEL              | NO     | 0                  | 0                  
+  | INT          | TAYLOR_ORDER             | NO     | 6                  | 6                  
+  | STRING       | 3INDEX_ALGORITHM         | NO     | AUTO               | AUTO               
+  | STRING       | BOYS_METHOD              | NO     | GHP                | GHP                
+  | STRING       | ERI_ALGORITHM            | NO     | MD4                | MD4                
+
+
+	Initializing Liboeprop (by U. Bozkaya) ...
+
+	*=================================================================*
+	*                  SCF                                            *
+	*   Developed by U. Bozkaya & Y. Alagoz                           *
+	*   Latest revision Feb 16, 2021                                  *
+	*=================================================================*
+
+
+
+  ## SCF Options ##
+
+  | TYPE         | KEY                      | INPUT? | VALUE              | DEFAULT            
+  |--------------|--------------------------|--------|--------------------|--------------------
+  | BOOL         | DIIS_DAMP                | NO     | FALSE              | FALSE              
+  | BOOL         | DIE_IF_NOT_CONVERGED     | NO     | TRUE               | TRUE               
+  | BOOL         | DO_DF                    | NO     | TRUE               | TRUE               
+  | BOOL         | DIIS                     | NO     | TRUE               | TRUE               
+  | BOOL         | FOCK_DAMP                | NO     | FALSE              | FALSE              
+  | BOOL         | GUESS_MIX                | NO     | FALSE              | FALSE              
+  | BOOL         | GUESS_PREVIOUS           | NO     | FALSE              | FALSE              
+  | BOOL         | LOCAL                    | NO     | FALSE              | FALSE              
+  | BOOL         | RETRY                    | NO     | TRUE               | TRUE               
+  | DOUBLE       | CUTOFF                   | NO     | 1e-10              | 1e-10              
+  | DOUBLE       | D_CONVERGENCE            | YES    | 1e-06              | 1e-06              
+  | DOUBLE       | DAMP_PARAM               | NO     | 0.02               | 0.02               
+  | DOUBLE       | E_CONVERGENCE            | YES    | 1e-08              | 1e-08              
+  | DOUBLE       | FOCK_DAMP_PERC           | NO     | 20.0               | 20.0               
+  | DOUBLE       | MIN_OVERLAP_EIGVAL       | NO     | 1e-06              | 1e-06              
+  | DOUBLE       | LOCAL_CONVERGENCE        | NO     | 1e-08              | 1e-08              
+  | DOUBLE       | QC_GUESS_E_CONVERGENCE   | NO     | 0.0001             | 0.0001             
+  | DOUBLE       | QC_GUESS_D_CONVERGENCE   | NO     | 0.005              | 0.005              
+  | INT          | MAX_DIIS                 | NO     | 6                  | 6                  
+  | INT          | MIN_DIIS                 | NO     | 2                  | 2                  
+  | INT          | PRINT_LEVEL              | NO     | 0                  | 0                  
+  | INT          | SCF_MAXITER              | NO     | 50                 | 50                 
+  | INT          | LOCAL_MAXITER            | NO     | 50                 | 50                 
+  | STRING       | DIIS_ALGORITHM           | NO     | DISK               | DISK               
+  | STRING       | GUESS                    | YES    | SAD                | SAD                
+  | BOOL         | MO_WRITE                 | NO     | FALSE              | FALSE              
+  | BOOL         | FOCK_WRITE               | NO     | FALSE              | FALSE              
+  | STRING       | ORTH_TYPE                | NO     | CANONICAL          | CANONICAL          
+  | STRING       | ROHF_CANONIC_TYPE        | NO     | GUEST              | GUEST              
+  | STRING       | ERI                      | NO     | INCORE             | INCORE             
+  | STRING       | SCF_ALGORITHM            | NO     | ROOTHAAN           | ROOTHAAN           
+  | STRING       | LOCAL_TYPE               | NO     | BOYS               | BOYS               
+  | BOOL         | SAD_FRAC_OCC             | NO     | TRUE               | TRUE               
+  | BOOL         | SAD_SPIN_AVERAGE         | NO     | TRUE               | TRUE               
+  | DOUBLE       | SAD_E_CONVERGENCE        | NO     | 1e-05              | 1e-05              
+  | DOUBLE       | SAD_D_CONVERGENCE        | NO     | 1e-05              | 1e-05              
+  | INT          | SAD_MAXITER              | NO     | 50                 | 50                 
+  | BOOL         | NIE                      | NO     | FALSE              | FALSE              
+  | BOOL         | SAD_DIIS                 | NO     | TRUE               | TRUE               
+  | INT          | SAD_MAX_DIIS             | NO     | 6                  | 6                  
+  | INT          | SAD_MIN_DIIS             | NO     | 2                  | 2                  
+  | INT          | SAD_PRINT                | NO     | 0                  | 0                  
+  | STRING       | SAD_AUX_BASIS            | NO     | SAD-FIT            | SAD-FIT            
+  | DOUBLE       | SAD_CHOLESKY_TOLERANCE   | NO     | 1e-07              | 1e-07              
+  | BOOL         | SOLVATION                | YES    | TRUE               | FALSE              
+  | BOOL         | BYPASS                   | NO     | FALSE              | FALSE              
+  | STRING       | IAO_TYPE                 | NO     | STANDARD2013       | STANDARD2013       
+  | BOOL         | USE_IAOS                 | NO     | FALSE              | FALSE              
+
+	Initializing libdiis ...
+	Initializing libmolint 1.1 ...
+ CC-PVDZ primary basis set file will be read for the N atom...
+ CC-PVDZ primary basis set file will be read for the C atom...
+ CC-PVDZ primary basis set file will be read for the H atom...
+ Nmaxthread: 32 
+ Nshell: 27 
+ Lmax:  2 
+ Npmax:  8 
+ Nao: 57 
+ Ndocc: 11 
+ Nsocc:  0 
+ NoccA: 11 
+ NoccB: 11 
+ Primary basis set info has been read.
+
+ CC-PVDZ-JKFIT aux basis set file will be read for the N atom...
+ CC-PVDZ-JKFIT aux basis set file will be read for the C atom...
+ CC-PVDZ-JKFIT aux basis set file will be read for the H atom...
+ Nshell_aux: 99 
+ Naux: 279 
+ Aux basis set info has been read.
+
+ orth_type: CANONICAL 
+ Cpu time for S ints :       0.0000 s
+ Wall time for S ints:       0.0047 s
+
+ Using canonical orthogonalization. 
+ Minimum eigenvalue in the overlap matrix is:   3.4657E-03 
+
+ Cpu time for T ints :       0.0300 s
+ Wall time for T ints:       0.0088 s
+ Cpu time for V ints :       0.1500 s
+ Wall time for V ints:       0.0382 s
+ Cpu time for Metric ints :       0.2600 s
+ Wall time for Metric ints:       0.0638 s
+ 3-Index Algorithm: AUTO 
+
+ Calling fortran integrals: ringing... 
+ Done with fintegrals.
+
+ Cpu time for 3-index ints :       0.5100 s
+ Wall time for 3-index ints:       0.1274 s
+ Cpu time for df-factors :       0.0400 s
+ Wall time for df-factors:       0.0112 s
+
+
+ Puream (True=1, False=0) : 1
+ Number of AO             : 57
+ Number of MO             : 57
+ Number of Aux Functions  : 279
+ Charge                   : 0
+ Multiplicity             : 1
+ Alpha OCC                : 11
+ Beta OCC                 : 11
+ Nuclear Repulsion Energy : 58.66999773
+ Energy Treshold          : 1.0e-08
+ Density Treshold         : 1.0e-06
+ Iteration Limit          : 50
+ Guess                    : SAD
+ Guess Mix                : false
+ Diis                     : true
+ Diis Damping             : false
+ Diis Damp Parameter      : 0.02
+ Diis Algorithm           : DISK
+ Cutoff Treshold          : 1.0e-10
+ Density Fitting          : true
+ Reference                : RHF
+ Die If Not Converged     : true
+ Print Level              : 0
+ ERI Algorithm            : INCORE
+ SCF Algorithm            : ROOTHAAN
+
+
+
+
+  ## SOLVATION Options ##
+
+  | TYPE         | KEY                      | INPUT? | VALUE              | DEFAULT            
+  |--------------|--------------------------|--------|--------------------|--------------------
+  | INT          | NUM_Z_POINTS             | NO     | 90                 | 90                 
+  | INT          | NUM_ANG_POINTS           | YES    | 100                | 100                
+  | STRING       | SASA_TYPE                | YES    | NUMERIC            | NUMERIC            
+  | STRING       | CHARGE_TYPE              | YES    | IAO_MULLIKEN       | IAO_MULLIKEN       
+  | STRING       | CDS_TYPE                 | YES    | SMD                | SMD                
+  | STRING       | SOLVENT                  | YES    | WATER              | WATER              
+  | STRING       | SOLVENT_PARAMS           | YES    | MN21               | SM8                
+  | STRING       | DIELECTRIC_PARAMS        | YES    | MN21               | MN21               
+  | STRING       | COULOMB_RADII            | YES    | SMD                | SMD                
+  | DOUBLE       | COVALENT_VW_CONST        | NO     | 0.76               | 0.76               
+  | DOUBLE       | SOLVENT_RADIUS           | NO     | 0.4                | 0.4                
+  | STRING       | RADIUS_TYPE              | YES    | SMD                | SMD                
+  | DOUBLE       | GB_DIJ                   | NO     | 3.7                | 3.7                
+  | DOUBLE       | GB_SIJ                   | NO     | 0.75               | 0.75               
+  | DOUBLE       | GB_CIJ                   | NO     | 0.0                | 0.0                
+  | DOUBLE       | F_PWSASA                 | NO     | 0.4535             | 0.4535             
+  | DOUBLE       | SCALE_VDW                | NO     | 1.0                | 1.0                
+  | DOUBLE       | SCALE_CR                 | NO     | 1.0                | 1.0                
+
+
+
+ Sasa Type                  : NUMERIC 
+ Charge Type                : IAO_MULLIKEN 
+ CDS Type                   : SMD 
+ Radius Type                : SMD 
+ Solvent                    : WATER 
+ Solvent Parameters         : MN21 
+ Dielectric Parameters      : MN21 
+ Coulomb Radii Parameters   : SMD 
+ GB d_ij parameter          : 3.7000000000 
+ GB S_ij parameter          : 0.7500000000 
+ GB C_ij parameter          : 0.0000000000 
+ Sclae_vdw parameter        : 1.0000000000 
+ Number of z-points         : 90 
+ Number of angular points   : 100 
+ Number of SASA grid points : 17902 
+ Solvent Dielectric Constant: 78.3553000000 
+
+ VDW Radii:
+	  1 N :       1.5500  ang
+	  2 C :       1.7000  ang
+	  3 C :       1.7000  ang
+	  4 H :       1.2000  ang
+	  5 H :       1.2000  ang
+	  6 H :       1.2000  ang
+
+	 Computing SASA... 
+
+ Atomic SASA values:
+	  1 N :      27.5379  ang^2
+	  2 C :      10.4477  ang^2
+	  3 C :      19.7810  ang^2
+	  4 H :      12.8521  ang^2
+	  5 H :      12.7461  ang^2
+	  6 H :      12.7533  ang^2
+
+	*Total SASA (angs^2): 96.1181784402 
+
+
+ Coulomb Radii:
+	  1 N :       1.8900  ang
+	  2 C :       1.8500  ang
+	  3 C :       1.8500  ang
+	  4 H :       1.2000  ang
+	  5 H :       1.2000  ang
+	  6 H :       1.2000  ang
+ Solvent Alpha                       : 1.1700000000 
+
+ ## Effective Born Radius (bohr) ##
+   0   3.8377153987 
+   1   3.7610945905 
+   2   3.8864110122 
+   3   3.0464257188 
+   4   3.0463435459 
+   5   3.0463655089 
+
+ Effective Born Radii:
+	  1 N :       2.0308  ang
+	  2 C :       1.9903  ang
+	  3 C :       2.0566  ang
+	  4 H :       1.6121  ang
+	  5 H :       1.6121  ang
+	  6 H :       1.6121  ang
+
+
+ Coulomb Integrals:
+	  1  1 :       0.2606  bohr^-1
+	  1  2 :       0.1731  bohr^-1
+	  1  3 :       0.2331  bohr^-1
+	  1  4 :       0.1569  bohr^-1
+	  1  5 :       0.1569  bohr^-1
+	  1  6 :       0.1569  bohr^-1
+	  2  1 :       0.1731  bohr^-1
+	  2  2 :       0.2659  bohr^-1
+	  2  3 :       0.2221  bohr^-1
+	  2  4 :       0.2616  bohr^-1
+	  2  5 :       0.2617  bohr^-1
+	  2  6 :       0.2617  bohr^-1
+	  3  1 :       0.2331  bohr^-1
+	  3  2 :       0.2221  bohr^-1
+	  3  3 :       0.2573  bohr^-1
+	  3  4 :       0.2042  bohr^-1
+	  3  5 :       0.2042  bohr^-1
+	  3  6 :       0.2042  bohr^-1
+	  4  1 :       0.1569  bohr^-1
+	  4  2 :       0.2616  bohr^-1
+	  4  3 :       0.2042  bohr^-1
+	  4  4 :       0.3283  bohr^-1
+	  4  5 :       0.2364  bohr^-1
+	  4  6 :       0.2364  bohr^-1
+	  5  1 :       0.1569  bohr^-1
+	  5  2 :       0.2617  bohr^-1
+	  5  3 :       0.2042  bohr^-1
+	  5  4 :       0.2364  bohr^-1
+	  5  5 :       0.3283  bohr^-1
+	  5  6 :       0.2364  bohr^-1
+	  6  1 :       0.1569  bohr^-1
+	  6  2 :       0.2617  bohr^-1
+	  6  3 :       0.2042  bohr^-1
+	  6  4 :       0.2364  bohr^-1
+	  6  5 :       0.2364  bohr^-1
+	  6  6 :       0.3283  bohr^-1
+    ===> SCF Iteration Started <===
+
+     Iter. |                   Energy |       Delta E |          Drms |
+    -------|--------------------------|---------------|---------------|
+         1 |      -130.99317888571230 |    -1.310e+02 |     2.078e-02 |
+         2 |      -131.84627555169084 |    -8.531e-01 |     1.035e-02 | DIIS
+         3 |      -131.89972396508193 |    -5.345e-02 |     5.606e-03 | DIIS
+         4 |      -131.93604283841319 |    -3.632e-02 |     1.177e-03 | DIIS
+         5 |      -131.93778842299184 |    -1.746e-03 |     4.244e-04 | DIIS
+         6 |      -131.93794351603776 |    -1.551e-04 |     7.896e-05 | DIIS
+         7 |      -131.93794771049909 |    -4.194e-06 |     7.508e-06 | DIIS
+         8 |      -131.93794776599174 |    -5.549e-08 |     6.965e-06 | DIIS
+         9 |      -131.93794783801786 |    -7.203e-08 |     2.176e-06 | DIIS
+        10 |      -131.93794777004979 |     6.797e-08 |     1.117e-06 | DIIS
+        11 |      -131.93794771389886 |     5.615e-08 |     6.232e-07 | DIIS
+        12 |      -131.93794766085506 |     5.304e-08 |     1.904e-07 | DIIS
+        13 |      -131.93794764694485 |     1.391e-08 |     4.088e-08 | DIIS
+        14 |      -131.93794764363946 |     3.305e-09 |     4.651e-09 | DIIS
+
+
+	-Alpha Occupied Orbital Energies (au):  
+	 1: -15.5614484142 	 2: -11.2780964636 	 3: -11.2669742730 	 4: -1.2094915093 	 5: -1.0274728930 
+	 6: -0.6835413446 	 7: -0.6145275714 	 8: -0.6143014208 	 9: -0.5393101465 	10: -0.4466794255 
+	11: -0.4462628760 
+	-Alpha Virtual Orbital Energies (au):  
+	12: 0.1719152177 	13: 0.2056162388 	14: 0.2058856595 	15: 0.2755057175 	16: 0.2758985886 
+	17: 0.3638609452 	18: 0.3943142475 	19: 0.6384490218 	20: 0.6385271065 	21: 0.7016221628 
+	22: 0.7257371095 	23: 0.7259097561 	24: 0.8264843699 	25: 0.8265015376 	26: 0.8730579354 
+	27: 0.9019056794 	28: 0.9780981768 	29: 1.0897437766 	30: 1.0898494293 	31: 1.1761590097 
+	32: 1.1761643738 	33: 1.3444263304 	34: 1.3444290774 	35: 1.3455226776 	36: 1.5155367843 
+	37: 1.6375482642 	38: 1.6970895301 	39: 1.6972307369 	40: 1.7751906185 	41: 1.8887414534 
+	42: 1.8887457944 	43: 2.0193668967 	44: 2.0966619391 	45: 2.0967465712 	46: 2.2159732185 
+	47: 2.2280554012 	48: 2.2280685507 	49: 2.4298521459 	50: 2.4299128915 	51: 2.7100578035 
+	52: 2.7361225148 	53: 2.7361322194 	54: 3.0463159084 	55: 3.0463504021 	56: 3.1075525597 
+	57: 3.2471862331 
+
+
+	-Mulliken Population Analysis for SCF:
+	 1: -0.1757659988 	 2: 0.0262510196 	 3: -0.1153779395 	 4: 0.0882611533 	 5: 0.0883246125 
+	 6: 0.0883071529 
+
+	-Lowdin Population Analysis for SCF:  
+	 1: -0.0335237727 	 2: -0.0604723155 	 3: -0.0745406906 	 4: 0.0561269412 	 5: 0.0562166619 
+	 6: 0.0561931758 
+
+	-Electronic Dipole Moment: (e a0)  
+	 X:  3.10885   Y:  -0.00033   Z:  0.00013   Total:  3.10885 
+
+	-Electronic Dipole Moment: (D)  
+	 X:  7.90190   Y:  -0.00084   Z:  0.00033   Total:  7.90190 
+
+	-Total Dipole Moment: (e a0)  
+	 X:  -1.57258   Y:  -0.00015   Z:  0.00006   Total:  1.57258 
+
+	-Total Dipole Moment: (D)  
+	 X:  -3.99710   Y:  -0.00038   Z:  0.00015   Total:  3.99710 
+
+
+
+	Initializing Liboeprop (by U. Bozkaya) ...
+
+
+	-Mulliken Population Analysis for SCF-IAO:
+	 1: -0.2608366177 	 2: -0.3979698439 	 3: 0.1518988213 	 4: 0.1689417960 	 5: 0.1690607730 
+	 6: 0.1690282231 
+
+	-Lowdin Population Analysis for SCF-IAO:  
+	 1: -0.2608366177 	 2: -0.3979698439 	 3: 0.1518988213 	 4: 0.1689417960 	 5: 0.1690607730 
+	 6: 0.1690282231 
+
+	Initializing Liblocal (by U. Bozkaya) ...
+  ==> Pipek-Mezey Localizer <==
+
+    Convergence =   1.000E-08
+    Maxiter     =          50
+
+    Iteration                   Metric       Residual
+    PM    0   1.0746231771637706E+01              -
+    PM    1   1.3237393334676455E+01   2.318172E-01
+    PM    2   1.3540165382767752E+01   2.287248E-02
+    PM    3   1.3540978455667000E+01   6.004896E-05
+    PM    4   1.3540983662646894E+01   3.845350E-07
+    PM    5   1.3540983727975314E+01   4.824496E-09
+
+    PM Localizer converged.
+
+
+
+	*Molecular contr. to CDS energy:       0.0000  kcal/mol
+	*Total CDS energy:       3.9655  kcal/mol
+	*SCF::Polarization Free Energy (au)      : -0.0046301401 
+	*SCF::Polarization Free Energy (kcal/mol):      -2.9055 
+	*SCF::CDS Free Energy (au)      : 0.0063194162 
+	*SCF::CDS Free Energy (kcal/mol):       3.9655 
+	*SCF::Total Solvation Free Energy (au)      : 0.0016892762 
+	*SCF::Total Solvation Free Energy (kcal/mol):       1.0600 
+ CC-PVDZ primary basis set file will be read for the N atom...
+ CC-PVDZ primary basis set file will be read for the C atom...
+ CC-PVDZ primary basis set file will be read for the H atom...
+ Nmaxthread: 32 
+ Nshell: 27 
+ Lmax:  2 
+ Npmax:  8 
+ Nao: 57 
+ Ndocc: 11 
+ Nsocc:  0 
+ NoccA: 11 
+ NoccB: 11 
+ Primary basis set info has been read.
+
+ CC-PVDZ-JKFIT aux basis set file will be read for the N atom...
+ CC-PVDZ-JKFIT aux basis set file will be read for the C atom...
+ CC-PVDZ-JKFIT aux basis set file will be read for the H atom...
+ Nshell_aux: 99 
+ Naux: 279 
+ Aux basis set info has been read.
+
+
+	*Total SCF Energy: -131.93794764363946
+
+ Cpu time for SCF :       0.8063 minutes
+ Wall time for SCF:       0.2307 minutes
+
+
+	MO spaces... 
+
+	 FC   OCC   VIR   FV 
+	----------------------
+	  3    8    46    0
+
+
+	Libtrans is initialized (by U. Bozkaya) ...
+
+ ============================================================================== 
+ ============================================================================== 
+ ============================================================================== 
+
+                       DF-MP2   
+              Program Written by Ugur Bozkaya
+              Latest Revision May 2, 2021
+
+ ============================================================================== 
+ ============================================================================== 
+ ============================================================================== 
+
+	For this residual convergence, default PCG convergence is:     1.00e-07
+    Warning: "PCG_CONVERGENCE" option is changed to     1.00e-07
+
+
+  ## DFOCC Options ##
+
+  | TYPE         | KEY                      | INPUT? | VALUE              | DEFAULT            
+  |--------------|--------------------------|--------|--------------------|--------------------
+  | BOOL         | EOM                      | NO     | FALSE              | FALSE              
+  | BOOL         | EOM_MP2                  | NO     | FALSE              | FALSE              
+  | BOOL         | EOM_MP3                  | NO     | FALSE              | FALSE              
+  | BOOL         | EOM_MP2_5                | NO     | FALSE              | FALSE              
+  | BOOL         | EOM_LCCD                 | NO     | FALSE              | FALSE              
+  | BOOL         | LOW_MEM_MP2              | NO     | FALSE              | FALSE              
+  | BOOL         | LOW_MEM_MP3              | NO     | FALSE              | FALSE              
+  | BOOL         | CD_PRESCREEN             | NO     | FALSE              | FALSE              
+  | DOUBLE       | CIS_E_CONV               | NO     | 1e-06              | 1e-06              
+  | DOUBLE       | CIS_R_CONV               | NO     | 1e-06              | 1e-06              
+  | DOUBLE       | CIS_RES_PRECONDITION_TOL | NO     | 0.0001             | 0.0001             
+  | DOUBLE       | DAVIDSON_TOLERANCE       | NO     | 1e-06              | 1e-06              
+  | DOUBLE       | E3_SCALE                 | NO     | 0.25               | 0.25               
+  | DOUBLE       | E_CONVERGENCE            | NO     | 1e-06              | 1e-06              
+  | DOUBLE       | JK_MEMORY                | NO     | 1000000000.0       | 1000000000.0       
+  | DOUBLE       | LEVEL_SHIFT              | NO     | 0.02               | 0.02               
+  | DOUBLE       | MAX_MOGRAD_CONVERGENCE   | NO     | 0.001              | 0.001              
+  | DOUBLE       | MO_STEP_MAX              | NO     | 0.5                | 0.5                
+  | DOUBLE       | MP2_OS_SCALE             | NO     | 1.2                | 1.2                
+  | DOUBLE       | MP2_SOS_SCALE            | NO     | 1.3                | 1.3                
+  | DOUBLE       | MP2_SOS_SCALE2           | NO     | 1.2                | 1.2                
+  | DOUBLE       | MP2_SS_SCALE             | NO     | 0.3333333333333333 | 0.3333333333333333 
+  | DOUBLE       | OCC_PERCENTAGE           | NO     | 99.0               | 99.0               
+  | DOUBLE       | OCC_TOLERANCE            | NO     | 1e-05              | 1e-05              
+  | DOUBLE       | OO_SCALE                 | NO     | 0.01               | 0.01               
+  | DOUBLE       | PCG_CONVERGENCE          | NO     | 1e-06              | 1e-06              
+  | DOUBLE       | R_CONVERGENCE            | NO     | 1e-05              | 1e-05              
+  | DOUBLE       | REG_PARAM                | NO     | 0.4                | 0.4                
+  | DOUBLE       | KAPPA_REG_PARAM          | NO     | 1.1                | 1.1                
+  | DOUBLE       | RMS_MOGRAD_CONVERGENCE   | NO     | 1e-06              | 1e-06              
+  | DOUBLE       | SCG_TOLERANCE            | NO     | 1e-06              | 1e-06              
+  | DOUBLE       | SCHMIDT_ADD_RES_TOL      | NO     | 0.001              | 0.001              
+  | INT          | ACTIVE_NAT_ORBS          | NO     | 2                  | 2                  
+  | INT          | CC_DIIS_MAX_VECS         | NO     | 6                  | 6                  
+  | INT          | CC_DIIS_MIN_VECS         | NO     | 2                  | 2                  
+  | INT          | CC_MAXITER               | NO     | 50                 | 50                 
+  | INT          | CUTOFF                   | NO     | 8                  | 8                  
+  | INT          | EXCITATION_RANGE         | NO     | 2                  | 2                  
+  | INT          | FOLLOW_ROOT              | NO     | 1                  | 1                  
+  | INT          | INTEGRAL_CUTOFF          | NO     | 9                  | 9                  
+  | INT          | MAX_VECS                 | NO     | 50                 | 50                 
+  | INT          | MO_DIIS_NUM_VECS         | NO     | 6                  | 6                  
+  | INT          | MO_MAXITER               | NO     | 50                 | 50                 
+  | INT          | NUM_ROOTS                | NO     | 4                  | 4                  
+  | INT          | PCG_MAXITER              | NO     | 50                 | 50                 
+  | INT          | PRINT_LEVEL              | NO     | 0                  | 0                  
+  | INT          | VECS_PER_ROOT            | NO     | 1                  | 1                  
+  | STRING       | CC_LAMBDA                | NO     | FALSE              | FALSE              
+  | STRING       | CHOLESKY                 | NO     | FALSE              | FALSE              
+  | STRING       | CIS_ALGORITHM            | NO     | MO_BASIS           | MO_BASIS           
+  | STRING       | CIS_GUESS_COEFF          | NO     | MIX                | MIX                
+  | STRING       | COMPUT_S2                | NO     | FALSE              | FALSE              
+  | STRING       | DIAG_METHOD              | NO     | DAVIDSON           | DAVIDSON           
+  | STRING       | DO_DIIS                  | NO     | TRUE               | TRUE               
+  | STRING       | DO_LEVEL_SHIFT           | NO     | TRUE               | TRUE               
+  | STRING       | DO_SCS                   | NO     | FALSE              | FALSE              
+  | STRING       | DO_SOS                   | NO     | FALSE              | FALSE              
+  | STRING       | EKT_IP                   | NO     | FALSE              | FALSE              
+  | STRING       | FREEZE_CORE              | NO     | TRUE               | TRUE               
+  | STRING       | HESS_TYPE                | NO     | HF                 | HF                 
+  | STRING       | JK_TYPE                  | NO     | DIRECT             | DIRECT             
+  | STRING       | LINEQ_SOLVER             | NO     | CDGESV             | CDGESV             
+  | STRING       | MO_READ                  | NO     | FALSE              | FALSE              
+  | STRING       | MO_WRITE                 | NO     | FALSE              | FALSE              
+  | STRING       | MP2_AMP_TYPE             | NO     | DIRECT             | DIRECT             
+  | STRING       | NAT_ORBS                 | NO     | FALSE              | FALSE              
+  | STRING       | NBO                      | NO     | TRUE               | TRUE               
+  | STRING       | OCC_ORBS_PRINT           | NO     | FALSE              | FALSE              
+  | STRING       | OEPROP                   | NO     | FALSE              | FALSE              
+  | STRING       | OPT_METHOD               | NO     | QNR                | QNR                
+  | STRING       | ORB_RESP_SOLVER          | NO     | PCG                | PCG                
+  | STRING       | ORTH_TYPE                | NO     | MGS                | MGS                
+  | STRING       | PCG_BETA_TYPE            | NO     | FLETCHER_REEVES    | FLETCHER_REEVES    
+  | STRING       | PPL_TYPE                 | NO     | AUTO               | AUTO               
+  | STRING       | PRINT_CI_VECS            | NO     | FALSE              | FALSE              
+  | STRING       | QCHF                     | NO     | FALSE              | FALSE              
+  | STRING       | READ_SCF_3INDEX          | NO     | TRUE               | TRUE               
+  | STRING       | REGULARIZATION           | NO     | FALSE              | FALSE              
+  | STRING       | REG_TYPE                 | NO     | NORMAL             | NORMAL             
+  | STRING       | SCS_TYPE                 | NO     | SCS                | SCS                
+  | STRING       | SOS_TYPE                 | NO     | SOS                | SOS                
+  | STRING       | TRIPLES_IABC_TYPE        | NO     | DISK               | DISK               
+  | STRING       | UNIT_GUESS_TYPE          | NO     | GEN                | GEN                
+  | STRING       | EKT_NEGATIVE_OCC         | NO     | ABS                | ABS                
+  | BOOL         | SOLVATION                | YES    | TRUE               | FALSE              
+
+	MO spaces... 
+
+	 FC   OCC   VIR   FV 
+	----------------------
+	  3    8    46    0
+ CC-PVDZ primary basis set file will be read for the N atom...
+ CC-PVDZ primary basis set file will be read for the C atom...
+ CC-PVDZ primary basis set file will be read for the H atom...
+ Nmaxthread: 32 
+ Nshell: 27 
+ Lmax:  2 
+ Npmax:  8 
+ Nao: 57 
+ Ndocc: 11 
+ Nsocc:  0 
+ NoccA: 11 
+ NoccB: 11 
+ Primary basis set info has been read.
+
+ CC-PVDZ-RI aux basis set file will be read for the N atom...
+ CC-PVDZ-RI aux basis set file will be read for the C atom...
+ CC-PVDZ-RI aux basis set file will be read for the H atom...
+ Nshell_aux: 72 
+ Naux: 210 
+ Aux basis set info has been read.
+
+ Cpu time for Metric ints :       0.1200 s
+ Wall time for Metric ints:       0.0298 s
+ 3-Index Algorithm: AUTO 
+
+ Calling fortran integrals: ringing... 
+ Done with fintegrals.
+
+ Cpu time for 3-index ints :       0.3400 s
+ Wall time for 3-index ints:       0.0872 s
+ Cpu time for df-factors :       0.0100 s
+ Wall time for df-factors:       0.0032 s
+ CC-PVDZ primary basis set file will be read for the N atom...
+ CC-PVDZ primary basis set file will be read for the C atom...
+ CC-PVDZ primary basis set file will be read for the H atom...
+ Nmaxthread: 32 
+ Nshell: 27 
+ Lmax:  2 
+ Npmax:  8 
+ Nao: 57 
+ Ndocc: 11 
+ Nsocc:  0 
+ NoccA: 11 
+ NoccB: 11 
+ Primary basis set info has been read.
+
+ CC-PVDZ-JKFIT aux basis set file will be read for the N atom...
+ CC-PVDZ-JKFIT aux basis set file will be read for the C atom...
+ CC-PVDZ-JKFIT aux basis set file will be read for the H atom...
+ Nshell_aux: 99 
+ Naux: 279 
+ Aux basis set info has been read.
+
+	Reading DF integrals from disk ...
+ Cpu time for Metric ints :       0.2000 s
+ Wall time for Metric ints:       0.0506 s
+	Number of basis functions in the DF-HF basis: 279
+	Number of basis functions in the DF-CC basis: 210
+
+	Available memory                      :  30000.00 MB 
+	Minimum required memory for amplitudes:      3.25 MB 
+	Memory requirement for B-CC (Q|mu nu) :      5.46 MB 
+	Memory requirement for B-CC (Q|ab)    :      3.55 MB 
+	Memory requirement for DF-CC int trans:      9.86 MB 
+
+	Computing DF-MP2 energy using SCF MOs (Canonical DF-MP2)... 
+	======================================================================= 
+	Nuclear Repulsion Energy (a.u.)    :    58.67000604769410
+	DF-HF Energy (a.u.)                :  -131.93794764363946
+	REF Energy (a.u.)                  :  -131.93794764363946
+	DF-MP2 Correlation Energy (a.u.)   :    -0.42306751194134
+	DF-MP2 Total Energy (a.u.)         :  -132.36101515558082
+	======================================================================= 
+
+	*Total MP2 Energy: -132.36101515558082
+
+	Computing unrelaxed response density matrices...
+	Number of independent-pairs: 506
+	Computing the generalized Fock matrix (GFM)...
+	Computing the orbital gradient...
+	Forming effective orbital gradient...
+	Solving orbital Z-vector equations...
+
+	            PCG Solver 
+	   ------------------------------ 
+	Iter     RMS Z Vector        RMS Residual  
+	----    ---------------    ---------------
+	  1         1.03e-03         9.79e-04
+	  2         3.44e-04         3.72e-04
+	  3         1.60e-04         3.69e-05
+	  4         1.95e-05         1.28e-05
+	  5         6.62e-06         5.68e-06
+	  6         5.00e-06         2.74e-06
+	  7         1.43e-06         6.62e-07
+	  8         2.19e-07         1.04e-07
+	  9         4.17e-08         1.64e-08
+
+	Computing the relaxed PDMs and GFM...
+	Compute solv. is starting ...
+
+	Initializing Liboeprop (by U. Bozkaya) ...
+
+
+	-Mulliken Population Analysis for MP2-IAO:
+	 1: -0.1328886521 	 2: -0.2631549327 	 3: 0.1396984579 	 4: 0.1228111843 	 5: 0.1228127407 
+	 6: 0.1228112789 
+
+	-Lowdin Population Analysis for MP2-IAO:  
+	 1: -0.1328886521 	 2: -0.2631549327 	 3: 0.1396984579 	 4: 0.1228111843 	 5: 0.1228127407 
+	 6: 0.1228112789 
+
+
+  ## SOLVATION Options ##
+
+  | TYPE         | KEY                      | INPUT? | VALUE              | DEFAULT            
+  |--------------|--------------------------|--------|--------------------|--------------------
+  | INT          | NUM_Z_POINTS             | NO     | 90                 | 90                 
+  | INT          | NUM_ANG_POINTS           | YES    | 100                | 100                
+  | STRING       | SASA_TYPE                | YES    | NUMERIC            | NUMERIC            
+  | STRING       | CHARGE_TYPE              | YES    | IAO_MULLIKEN       | IAO_MULLIKEN       
+  | STRING       | CDS_TYPE                 | YES    | SMD                | SMD                
+  | STRING       | SOLVENT                  | YES    | WATER              | WATER              
+  | STRING       | SOLVENT_PARAMS           | YES    | MN21               | SM8                
+  | STRING       | DIELECTRIC_PARAMS        | YES    | MN21               | MN21               
+  | STRING       | COULOMB_RADII            | YES    | SMD                | SMD                
+  | DOUBLE       | COVALENT_VW_CONST        | NO     | 0.76               | 0.76               
+  | DOUBLE       | SOLVENT_RADIUS           | NO     | 0.4                | 0.4                
+  | STRING       | RADIUS_TYPE              | YES    | SMD                | SMD                
+  | DOUBLE       | GB_DIJ                   | NO     | 3.7                | 3.7                
+  | DOUBLE       | GB_SIJ                   | NO     | 0.75               | 0.75               
+  | DOUBLE       | GB_CIJ                   | NO     | 0.0                | 0.0                
+  | DOUBLE       | F_PWSASA                 | NO     | 0.4535             | 0.4535             
+  | DOUBLE       | SCALE_VDW                | NO     | 1.0                | 1.0                
+  | DOUBLE       | SCALE_CR                 | NO     | 1.0                | 1.0                
+
+
+
+ Sasa Type                  : NUMERIC 
+ Charge Type                : IAO_MULLIKEN 
+ CDS Type                   : SMD 
+ Radius Type                : SMD 
+ Solvent                    : WATER 
+ Solvent Parameters         : MN21 
+ Dielectric Parameters      : MN21 
+ Coulomb Radii Parameters   : SMD 
+ GB d_ij parameter          : 3.7000000000 
+ GB S_ij parameter          : 0.7500000000 
+ GB C_ij parameter          : 0.0000000000 
+ Sclae_vdw parameter        : 1.0000000000 
+ Number of z-points         : 90 
+ Number of angular points   : 100 
+ Number of SASA grid points : 17902 
+ Solvent Dielectric Constant: 78.3553000000 
+
+ VDW Radii:
+	  1 N :       1.5500  ang
+	  2 C :       1.7000  ang
+	  3 C :       1.7000  ang
+	  4 H :       1.2000  ang
+	  5 H :       1.2000  ang
+	  6 H :       1.2000  ang
+
+	 Computing SASA... 
+
+ Atomic SASA values:
+	  1 N :      27.5379  ang^2
+	  2 C :      10.4477  ang^2
+	  3 C :      19.7810  ang^2
+	  4 H :      12.8521  ang^2
+	  5 H :      12.7461  ang^2
+	  6 H :      12.7533  ang^2
+
+	*Total SASA (angs^2): 96.1181784402 
+
+
+ Coulomb Radii:
+	  1 N :       1.8900  ang
+	  2 C :       1.8500  ang
+	  3 C :       1.8500  ang
+	  4 H :       1.2000  ang
+	  5 H :       1.2000  ang
+	  6 H :       1.2000  ang
+ Solvent Alpha                       : 1.1700000000 
+
+ ## Effective Born Radius (bohr) ##
+   0   3.8377153987 
+   1   3.7610945905 
+   2   3.8864110122 
+   3   3.0464257188 
+   4   3.0463435459 
+   5   3.0463655089 
+
+ Effective Born Radii:
+	  1 N :       2.0308  ang
+	  2 C :       1.9903  ang
+	  3 C :       2.0566  ang
+	  4 H :       1.6121  ang
+	  5 H :       1.6121  ang
+	  6 H :       1.6121  ang
+
+
+ Coulomb Integrals:
+	  1  1 :       0.2606  bohr^-1
+	  1  2 :       0.1731  bohr^-1
+	  1  3 :       0.2331  bohr^-1
+	  1  4 :       0.1569  bohr^-1
+	  1  5 :       0.1569  bohr^-1
+	  1  6 :       0.1569  bohr^-1
+	  2  1 :       0.1731  bohr^-1
+	  2  2 :       0.2659  bohr^-1
+	  2  3 :       0.2221  bohr^-1
+	  2  4 :       0.2616  bohr^-1
+	  2  5 :       0.2617  bohr^-1
+	  2  6 :       0.2617  bohr^-1
+	  3  1 :       0.2331  bohr^-1
+	  3  2 :       0.2221  bohr^-1
+	  3  3 :       0.2573  bohr^-1
+	  3  4 :       0.2042  bohr^-1
+	  3  5 :       0.2042  bohr^-1
+	  3  6 :       0.2042  bohr^-1
+	  4  1 :       0.1569  bohr^-1
+	  4  2 :       0.2616  bohr^-1
+	  4  3 :       0.2042  bohr^-1
+	  4  4 :       0.3283  bohr^-1
+	  4  5 :       0.2364  bohr^-1
+	  4  6 :       0.2364  bohr^-1
+	  5  1 :       0.1569  bohr^-1
+	  5  2 :       0.2617  bohr^-1
+	  5  3 :       0.2042  bohr^-1
+	  5  4 :       0.2364  bohr^-1
+	  5  5 :       0.3283  bohr^-1
+	  5  6 :       0.2364  bohr^-1
+	  6  1 :       0.1569  bohr^-1
+	  6  2 :       0.2617  bohr^-1
+	  6  3 :       0.2042  bohr^-1
+	  6  4 :       0.2364  bohr^-1
+	  6  5 :       0.2364  bohr^-1
+	  6  6 :       0.3283  bohr^-1
+
+
+	*Molecular contr. to CDS energy:       0.0000  kcal/mol
+	*Total CDS energy:       3.9655  kcal/mol
+	*MP2::Polarization Free Energy (au)      : -0.0031186797 
+	*MP2::Polarization Free Energy (kcal/mol):      -1.9570 
+	*MP2::CDS Free Energy (au)      : 0.0063194162 
+	*MP2::CDS Free Energy (kcal/mol):       3.9655 
+	*MP2::Total Solvation Free Energy (au)      : 0.0032007366 
+	*MP2::Total Solvation Free Energy (kcal/mol):       2.0085 
+	GB-MP2 Total Energy (a.u.)         :  -132.35781441902503
+
+	*Total GB-MP2 Energy: -132.36101515558082
+
+
+ Cpu time for MacroQC :       0.9122 minutes
+ Wall time for MacroQC:       0.2671 minutes
+
+
+ ******************************************************************************************
+	 MacroQC terminates normally:) 
+ ****************************************************************************************** 
+
