@@ -1,0 +1,37 @@
+[files]
+ref_file = "ref_cho.txt"
+output_file = "paramfit_cho_explicit_s_pair_d_maemax.out"
+parameter_output_file = "paramfit_cho_explicit_s_pair_d_maemax.params.toml"
+
+[data]
+qcmethod = "SCF"
+charge_type = "IAO_MULLIKEN"
+# If omitted, paramfit counts ref entries and output files automatically.
+# ndata = 115
+
+[parameters]
+solvent_eps = 78.3553
+gb_sij = 0.75
+gb_dij = 3.7
+dch = 3.7
+doh = 3.7
+gb_cij = 0.0
+fit_atoms = ["H", "C", "O"]
+sij_mode = "explicit"
+optimize_sij = true
+sij_pair_selection = "auto"
+optimize_dij = false
+
+[optimization]
+algorithm = "global"
+objective = "mae-max"
+max_penalty_weight = 1.0
+global_maxiter = 80
+popsize = 15
+seed = 1
+polish = true
+
+[tolerances]
+mae_tol = 0.50
+rms_tol = 0.80
+max_tol = 2.50

@@ -1,0 +1,41 @@
+[files]
+ref_file = "ref.txt"
+output_file = "paramfit_chon_n_stage_explicit_maemax_dnh.out"
+parameter_output_file = "paramfit_chon_n_stage_explicit_maemax_dnh.params.toml"
+
+[data]
+qcmethod = "SCF"
+charge_type = "IAO_MULLIKEN"
+# If omitted, paramfit counts ref entries and output files automatically.
+# ndata = 176
+
+[parameters]
+solvent_eps = 78.3553
+gb_sij = 0.75
+gb_dij = 3.7
+dch = 3.7
+doh = 3.7
+dnh = 3.7
+gb_cij = 0.0
+initial_parameter_file = "../1_CHO/paramfit_cho_explicit_maemax_final.params.toml"
+fit_atoms = ["N"]
+base_atoms = ["H", "C", "O"]
+sij_mode = "explicit"
+optimize_sij = true
+sij_pair_selection = "fit-with-base"
+optimize_dij = false
+optimize_dnh = true
+
+[optimization]
+algorithm = "global"
+objective = "mae-max"
+max_penalty_weight = 1.0
+global_maxiter = 80
+popsize = 15
+seed = 1
+polish = true
+
+[tolerances]
+mae_tol = 0.50
+rms_tol = 0.80
+max_tol = 2.50

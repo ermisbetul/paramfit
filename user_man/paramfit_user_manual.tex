@@ -1,0 +1,1781 @@
+\documentclass[11pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{booktabs}
+\usepackage{enumitem}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=blue!50!black,
+  urlcolor=blue!50!black,
+  citecolor=blue!50!black
+}
+
+\lstdefinelanguage{toml}{
+  morecomment=[l]{\#},
+  morestring=[b]",
+  sensitive=true
+}
+
+\lstset{
+  basicstyle=\ttfamily\small,
+  columns=fullflexible,
+  keepspaces=true,
+  frame=single,
+  framerule=0.4pt,
+  rulecolor=\color{black!25},
+  breaklines=true,
+  tabsize=2
+}
+
+\begin{document}
+
+\hypersetup{pageanchor=false}
+\begin{titlepage}
+\thispagestyle{empty}
+\centering
+\vspace*{0.18\textheight}
+
+{\Huge\bfseries PARAMFIT\par}
+\vspace{0.8cm}
+{\LARGE User Manual\par}
+\vspace{1.2cm}
+{\Large Generalized Born Solvation Parameter Fitting\par}
+\vspace{0.25cm}
+{\Large with Fixed CDS Contributions\par}
+
+\vspace{2.4cm}
+
+{\Large Ugur Bozkaya and Betul Ermis\par}
+\vspace{1.0cm}
+{\large \today\par}
+
+\vfill
+\end{titlepage}
+
+\hypersetup{pageanchor=true}
+\pagenumbering{roman}
+\newpage
+\tableofcontents
+\newpage
+\pagenumbering{arabic}
+
+\section{Overview}
+
+\textsc{Paramfit} is a command-line program for fitting parameters in a
+Generalized Born / pairwise descreening solvation model against reference
+solvation free energies. The program reads molecular data from previously
+computed output files, keeps the CDS contribution fixed, recomputes the
+polarization contribution with trial parameter sets, and optimizes selected
+model parameters against the supplied reference data.
+
+The recommended way to run the program is to provide a TOML-style input file:
+
+\begin{lstlisting}[language=bash]
+paramfit --input job_name.inp
+\end{lstlisting}
+
+The input file is divided into named blocks. Each block controls a different
+part of the job:
+
+\begin{lstlisting}[language=toml]
+[files]
+[data]
+[parameters]
+[optimization]
+[tolerances]
+\end{lstlisting}
+
+This manual describes each block in detail. The first block, \texttt{[files]},
+controls the names of the reference data file, the main output file, and the
+parameter file written at the end of the fit.
+
+\section{The \texttt{[files]} Block}
+
+The \texttt{[files]} block defines the file names used by a \textsc{Paramfit}
+job. It is intentionally small: it does not control the molecular data format,
+the fitting model, or the optimization algorithm. Its only purpose is to tell
+the program where to read the reference values from and where to write the job
+outputs.
+
+All options in this block have default values. Therefore, a valid input file may
+omit one or more entries from the \texttt{[files]} block. If an entry is omitted,
+\textsc{Paramfit} uses the corresponding default described below. In routine
+work, it is often best to provide only the reference file name and allow the
+program to derive the output file names from the input file name.
+
+\subsection{Recommended Minimal Usage}
+
+For most jobs, the recommended \texttt{[files]} block is:
+
+\begin{lstlisting}[language=toml]
+[files]
+ref_file = "ref.txt"
+\end{lstlisting}
+
+With this minimal form, \textsc{Paramfit} reads reference solvation free
+energies from \texttt{ref.txt}. The main output file and the final parameter
+file are then generated automatically from the input file name.
+
+For example, if the job is launched as:
+
+\begin{lstlisting}[language=bash]
+paramfit --input cho_stage.inp
+\end{lstlisting}
+
+and no explicit output file names are given, the program will use:
+
+\begin{center}
+\begin{tabular}{ll}
+\toprule
+File role & File name \\
+\midrule
+Input file & \texttt{cho\_stage.inp} \\
+Main output file & \texttt{cho\_stage.out} \\
+Final parameter file & \texttt{cho\_stage.params.toml} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+This naming convention is recommended because it keeps the input, output, and
+final parameter file associated with the same job name.
+
+\subsection{Complete Usage}
+
+All available options in the \texttt{[files]} block are:
+
+\begin{lstlisting}[language=toml]
+[files]
+ref_file = "ref.txt"
+output_file = "paramfit.out"
+parameter_output_file = "paramfit.params.toml"
+\end{lstlisting}
+
+Each option is described below.
+
+\subsection{Default Values}
+
+If the user does not provide any custom file names, the following defaults are
+used:
+
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+Option & Default value & Meaning \\
+\midrule
+\texttt{ref\_file} & \texttt{ref.txt} & Reference solvation free energies \\
+\texttt{output\_file} & derived from input name & Main text output \\
+\texttt{parameter\_output\_file} & derived from output name & Final parameter file \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The output-name default has two cases:
+
+\begin{itemize}[leftmargin=*]
+  \item If the program is run with an input file, the main output file is derived
+        from the input file name. For example, \texttt{cho.inp} gives
+        \texttt{cho.out}.
+  \item If the program is run without an input file, the main output file is
+        \texttt{paramfit.out}.
+\end{itemize}
+
+The parameter file is derived from the final main output file name. For example,
+\texttt{cho.out} gives \texttt{cho.params.toml}, and \texttt{paramfit.out} gives
+\texttt{paramfit.params.toml}.
+
+Thus, the following minimal block:
+
+\begin{lstlisting}[language=toml]
+[files]
+\end{lstlisting}
+
+is valid and means:
+
+\begin{lstlisting}[language=toml]
+[files]
+ref_file = "ref.txt"
+# output_file is derived automatically
+# parameter_output_file is derived automatically
+\end{lstlisting}
+
+However, it is usually clearer to write at least the reference file explicitly:
+
+\begin{lstlisting}[language=toml]
+[files]
+ref_file = "ref.txt"
+\end{lstlisting}
+
+\subsection{\texttt{ref\_file}}
+
+\begin{lstlisting}[language=toml]
+ref_file = "ref.txt"
+\end{lstlisting}
+
+\textbf{Purpose.}
+Specifies the file containing the reference solvation free energies used as
+target values during fitting.
+
+\textbf{Default.}
+If \texttt{ref\_file} is not provided, the program uses:
+
+\begin{lstlisting}[language=toml]
+ref_file = "ref.txt"
+\end{lstlisting}
+
+\textbf{Expected format.}
+The reference file must contain one data point per line. Each line must contain
+the data index followed by the reference solvation free energy in kcal/mol:
+
+\begin{lstlisting}
+1  -6.31
+2  -4.29
+3  -0.87
+4   1.83
+\end{lstlisting}
+
+The first column is the data index. The second column is the reference
+solvation free energy. The order and number of entries must be consistent with
+the calculation output files in the working directory.
+
+\textbf{Index matching.}
+\textsc{Paramfit} expects calculation output files to follow the naming pattern:
+
+\begin{lstlisting}
+[index]_[name].out
+\end{lstlisting}
+
+For example:
+
+\begin{lstlisting}
+1_water.out
+2_methanol.out
+3_acetone.out
+\end{lstlisting}
+
+The index in the reference file must match the index at the beginning of the
+corresponding output file name. For example, line \texttt{2 -4.29} in the
+reference file corresponds to the output file whose name starts with
+\texttt{2\_}.
+
+\textbf{Typical stage-specific names.}
+For staged parametrization, it is often clearer to use stage-specific reference
+file names:
+
+\begin{lstlisting}[language=toml]
+ref_file = "ref_cho.txt"
+ref_file = "ref_chon.txt"
+ref_file = "ref_chons.txt"
+\end{lstlisting}
+
+These names are not required by the program. They are only a recommended
+project organization convention.
+
+\subsection{\texttt{output\_file}}
+
+\begin{lstlisting}[language=toml]
+output_file = "paramfit.out"
+\end{lstlisting}
+
+\textbf{Purpose.}
+Specifies the main text output file written by the program. This file contains
+the job summary, input summary, initial parameters, optimization progress, final
+parameters, final statistics, bound checks, and the full final error table.
+
+\textbf{Default behavior.}
+The default depends on how the program is launched.
+
+\begin{itemize}[leftmargin=*]
+  \item If no input file is used, the default is \texttt{paramfit.out}.
+  \item If an input file is used and \texttt{output\_file} is not specified,
+        the output file name is derived from the input file name.
+\end{itemize}
+
+For example:
+
+\begin{center}
+\begin{tabular}{ll}
+\toprule
+Input file & Default output file \\
+\midrule
+\texttt{cho.inp} & \texttt{cho.out} \\
+\texttt{n\_stage.inp} & \texttt{n\_stage.out} \\
+\texttt{halogen\_fit.inp} & \texttt{halogen\_fit.out} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{When to specify it manually.}
+Manual specification is useful when several fits are launched from the same
+input file but should write to different output names:
+
+\begin{lstlisting}[language=toml]
+[files]
+ref_file = "ref_cho.txt"
+output_file = "paramfit_cho_seed_1.out"
+\end{lstlisting}
+
+However, for routine usage, deriving the output name from the input file name is
+usually cleaner.
+
+\subsection{\texttt{parameter\_output\_file}}
+
+\begin{lstlisting}[language=toml]
+parameter_output_file = "paramfit.params.toml"
+\end{lstlisting}
+
+\textbf{Purpose.}
+Specifies the TOML parameter file written at the end of the optimization. This
+file contains the optimized radii, Sij values, and GB distance parameters. It is
+the file that should normally be passed to the next stage through
+\texttt{initial\_parameter\_file} in the \texttt{[parameters]} block.
+
+\textbf{Default behavior.}
+If \texttt{parameter\_output\_file} is not provided, the program derives it from
+the main output file name by replacing the suffix with
+\texttt{.params.toml}.
+
+\begin{center}
+\begin{tabular}{ll}
+\toprule
+Main output file & Default parameter file \\
+\midrule
+\texttt{paramfit.out} & \texttt{paramfit.params.toml} \\
+\texttt{cho\_stage.out} & \texttt{cho\_stage.params.toml} \\
+\texttt{n\_stage.out} & \texttt{n\_stage.params.toml} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Use in staged parametrization.}
+The parameter file written by one stage can be used as the initial parameter
+file for the next stage. For example, a CHO fit may write:
+
+\begin{lstlisting}[language=toml]
+parameter_output_file = "cho_stage.params.toml"
+\end{lstlisting}
+
+The next stage may then read it as:
+
+\begin{lstlisting}[language=toml]
+[parameters]
+initial_parameter_file = "../1_CHO/cho_stage.params.toml"
+\end{lstlisting}
+
+This mechanism is central to staged parametrization: previously optimized
+parameters are loaded and kept fixed unless the new input explicitly requests
+that they be optimized again.
+
+\section{The \texttt{[data]} Block}
+
+The \texttt{[data]} block defines how \textsc{Paramfit} interprets the
+calculation output files in the current working directory. It does not contain
+the molecular data directly. Instead, it tells the program how many data points
+to read, which quantum chemistry method label to search for, and which atomic
+charge block should be used in the polarization energy calculation.
+
+\textsc{Paramfit} currently reads MacroQC output files only. The expected files
+must be plain-text \texttt{.out} files in the working directory, and their names
+must follow the index-based convention:
+
+\begin{lstlisting}
+[index]_[name].out
+\end{lstlisting}
+
+Examples are:
+
+\begin{lstlisting}
+1_water.out
+2_methanol.out
+3_acetone.out
+\end{lstlisting}
+
+The leading integer is important. It connects the calculation output file to
+the corresponding line in the reference file. For example, the output file
+\texttt{3\_acetone.out} corresponds to the reference entry whose first column is
+\texttt{3}.
+
+\subsection{Recommended Minimal Usage}
+
+For the current SCF/IAO-Mulliken workflow, the \texttt{[data]} block can often
+be omitted or kept minimal:
+
+\begin{lstlisting}[language=toml]
+[data]
+qcmethod = "SCF"
+charge_type = "IAO_MULLIKEN"
+\end{lstlisting}
+
+If \texttt{ndata} is not supplied, \textsc{Paramfit} counts the number of
+reference entries and the number of output files automatically. This is the
+recommended behavior for routine use because it catches missing or extra output
+files early.
+
+\subsection{Complete Usage}
+
+All available options in the \texttt{[data]} block are:
+
+\begin{lstlisting}[language=toml]
+[data]
+ndata = 115
+qcmethod = "SCF"
+charge_type = "IAO_MULLIKEN"
+\end{lstlisting}
+
+\subsection{Default Values}
+
+If the user does not provide custom values, the following defaults are used:
+
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+Option & Default value & Meaning \\
+\midrule
+\texttt{ndata} & automatically counted & Number of data points \\
+\texttt{qcmethod} & \texttt{SCF} & QC method label used in MacroQC output parsing \\
+\texttt{charge\_type} & \texttt{IAO\_MULLIKEN} & Atomic charge block used for GB polarization \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{\texttt{ndata}}
+
+\begin{lstlisting}[language=toml]
+ndata = 115
+\end{lstlisting}
+
+\textbf{Purpose.}
+Specifies the number of data points in the fitting set.
+
+\textbf{Default behavior.}
+If \texttt{ndata} is not provided, \textsc{Paramfit} counts:
+
+\begin{itemize}[leftmargin=*]
+  \item the number of valid entries in the reference file, and
+  \item the number of calculation output files matching \texttt{[0-9]*\_*.out}.
+\end{itemize}
+
+The two counts must agree. If they do not agree, the program stops with an error
+unless the user explicitly provides \texttt{ndata}. This check is intended to
+avoid accidental fits with missing output files, extra files in the directory,
+or reference entries that do not have corresponding calculations.
+
+\textbf{When to set it manually.}
+In most production runs, \texttt{ndata} should be omitted. It should be set
+manually only when the user intentionally wants to override the automatic
+counting behavior.
+
+\subsection{\texttt{qcmethod}}
+
+\begin{lstlisting}[language=toml]
+qcmethod = "SCF"
+\end{lstlisting}
+
+\textbf{Purpose.}
+Specifies the quantum chemistry method label used when searching MacroQC output
+files. This string is not used to perform a quantum chemistry calculation. It is
+only used to locate method-specific blocks and energy lines that already exist
+in the output files.
+
+\textbf{Default.}
+If \texttt{qcmethod} is not provided, the program uses:
+
+\begin{lstlisting}[language=toml]
+qcmethod = "SCF"
+\end{lstlisting}
+
+\textbf{How it is used.}
+The value of \texttt{qcmethod} is inserted into the text patterns searched by
+the parser. For example, with:
+
+\begin{lstlisting}[language=toml]
+qcmethod = "SCF"
+\end{lstlisting}
+
+the program searches for charge and CDS labels such as:
+
+\begin{lstlisting}
+Mulliken Population Analysis for SCF-IAO:
+Lowdin Population Analysis for SCF-IAO:
+SCF::CDS Free Energy (kcal/mol):
+\end{lstlisting}
+
+If a different method label is used in the MacroQC output, \texttt{qcmethod}
+must match that label. For example, if the output contains method-specific lines
+for \texttt{MP2}, the input should use:
+
+\begin{lstlisting}[language=toml]
+qcmethod = "MP2"
+\end{lstlisting}
+
+The label must be consistent with the text printed in the output files. If the
+corresponding charge block or CDS free energy line cannot be found, the program
+stops with a parsing error.
+
+\subsection{\texttt{charge\_type}}
+
+\begin{lstlisting}[language=toml]
+charge_type = "IAO_MULLIKEN"
+\end{lstlisting}
+
+\textbf{Purpose.}
+Specifies which atomic charge block is read from the MacroQC output files and
+used in the GB polarization energy calculation.
+
+\textbf{Default.}
+If \texttt{charge\_type} is not provided, the program uses:
+
+\begin{lstlisting}[language=toml]
+charge_type = "IAO_MULLIKEN"
+\end{lstlisting}
+
+\textbf{Supported behavior.}
+The current parser distinguishes two charge-block styles:
+
+\begin{itemize}[leftmargin=*]
+  \item \texttt{IAO\_MULLIKEN}: reads the block labeled
+        \texttt{Mulliken Population Analysis for <qcmethod>-IAO:}
+  \item any other value: reads the block labeled
+        \texttt{Lowdin Population Analysis for <qcmethod>-IAO:}
+\end{itemize}
+
+Therefore, the recommended explicit values are:
+
+\begin{lstlisting}[language=toml]
+charge_type = "IAO_MULLIKEN"
+charge_type = "IAO_LOWDIN"
+\end{lstlisting}
+
+The charge type affects only the atomic charges used in the polarization
+calculation. It does not change the CDS contribution. The CDS contribution is
+read separately from the method-specific CDS free energy line and is kept fixed
+during parameter fitting.
+
+\subsection{MacroQC Output Requirements}
+
+Each MacroQC output file must contain all information required to recompute the
+polarization energy and add the fixed CDS contribution. The current parser
+expects the following data to be present:
+
+\begin{center}
+\begin{tabular}{ll}
+\toprule
+Required data & How it is identified \\
+\midrule
+Number of atoms & \texttt{Number of Atoms : <integer>} \\
+Cartesian coordinates & indexed lines containing atom symbol and x/y/z values \\
+Atomic charges & selected Mulliken or Lowdin \texttt{<qcmethod>-IAO} block \\
+CDS free energy & \texttt{<qcmethod>::CDS Free Energy (kcal/mol): <value>} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Number of atoms.}
+The parser searches for a line of the form:
+
+\begin{lstlisting}
+Number of Atoms : 12
+\end{lstlisting}
+
+\textbf{Cartesian coordinates.}
+The parser reads coordinate lines containing an atom index, an element symbol,
+and three Cartesian coordinates. A typical line has the form:
+
+\begin{lstlisting}
+1  C   0.000000   0.000000   0.000000
+\end{lstlisting}
+
+The coordinates are read in Angstrom.
+
+\textbf{Atomic charges.}
+The parser first locates the requested charge-analysis block, then reads
+floating-point charge values until the block ends. At least one charge per atom
+must be present.
+
+\textbf{CDS free energy.}
+The parser searches for the method-specific CDS free energy line. For the
+default method, the expected line contains:
+
+\begin{lstlisting}
+SCF::CDS Free Energy (kcal/mol):
+\end{lstlisting}
+
+The numerical value on this line is read in kcal/mol and kept fixed throughout
+the optimization.
+
+\subsection{Important Practical Notes}
+
+\begin{itemize}[leftmargin=*]
+  \item \textsc{Paramfit} does not run MacroQC. It only reads existing MacroQC
+        output files.
+  \item All output files for the current fit must be in the directory where the
+        program is launched.
+  \item Output files must follow the \texttt{[index]\_[name].out} naming rule.
+  \item The reference file indices and output file indices must describe the
+        same molecules in the same dataset.
+  \item The selected \texttt{qcmethod} and \texttt{charge\_type} must match
+        labels that actually exist in the output files.
+  \item The CDS energy is not fitted. It is read from each output file and added
+        as a fixed contribution to the recomputed polarization energy.
+\end{itemize}
+
+\section{The \texttt{[parameters]} Block}
+
+The \texttt{[parameters]} block controls the solvation-model parameters used by
+the fit. It specifies the starting values for model constants, the atom types to
+be optimized, the Sij parametrization mode, and the nonlinear GB distance
+parameters that should be optimized.
+
+This block is the central part of a \textsc{Paramfit} input file. The reference
+energies and molecular data are read elsewhere, but the \texttt{[parameters]}
+block determines which physical parameters are allowed to change during the
+optimization.
+
+\subsection{Recommended Minimal CHO Example}
+
+For a first-stage CHO fit using grouped Sij parameters and optimized C--H and
+O--H distance parameters, a typical \texttt{[parameters]} block is:
+
+\begin{lstlisting}[language=toml]
+[parameters]
+solvent_eps = 78.3553
+gb_sij = 0.75
+gb_dij = 3.7
+dch = 3.7
+doh = 3.7
+gb_cij = 0.0
+
+fit_atoms = ["H", "C", "O"]
+sij_mode = "grouped"
+sij_group_scheme = "hco"
+
+optimize_sij = true
+optimize_dij = true
+optimize_dch = true
+optimize_doh = true
+\end{lstlisting}
+
+For later stages, an initial parameter file is normally provided so that
+previously optimized parameters can be reused:
+
+\begin{lstlisting}[language=toml]
+[parameters]
+initial_parameter_file = "../1_CHO/cho_stage.params.toml"
+
+fit_atoms = ["N"]
+base_atoms = ["H", "C", "O"]
+
+sij_mode = "explicit"
+sij_pair_selection = "fit-with-base"
+
+optimize_sij = true
+optimize_dnh = true
+\end{lstlisting}
+
+\subsection{Complete Usage}
+
+All available options in the \texttt{[parameters]} block are:
+
+\begin{lstlisting}[language=toml]
+[parameters]
+initial_parameter_file = "previous_stage.params.toml"
+
+solvent_eps = 78.3553
+gb_sij = 0.75
+gb_dij = 3.7
+dch = 3.7
+doh = 3.7
+dnh = 3.7
+gb_cij = 0.0
+
+fit_atoms = ["H", "C", "O"]
+base_atoms = ["H", "C", "O"]
+
+sij_mode = "explicit"
+sij_group_scheme = "hco"
+sij_pair_selection = "auto"
+fit_sij_pairs = [["H", "C"], ["C", "H"]]
+
+optimize_sij = false
+optimize_dij = false
+optimize_dch = false
+optimize_doh = false
+optimize_dnh = false
+\end{lstlisting}
+
+\subsection{Default Values}
+
+If the user does not provide custom values, the following defaults are used:
+
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+Option & Default value & Meaning \\
+\midrule
+\texttt{initial\_parameter\_file} & not provided & start from built-in defaults \\
+\texttt{solvent\_eps} & \texttt{78.3553} & solvent dielectric constant \\
+\texttt{gb\_sij} & \texttt{0.75} & default Sij value \\
+\texttt{gb\_dij} & \texttt{3.7} & default GB distance parameter, d0 \\
+\texttt{dch} & \texttt{3.7} & C--H / H--C distance parameter \\
+\texttt{doh} & \texttt{3.7} & O--H / H--O distance parameter \\
+\texttt{dnh} & \texttt{3.7} & N--H / H--N distance parameter \\
+\texttt{gb\_cij} & \texttt{0.0} & additive GB gamma parameter \\
+\texttt{fit\_atoms} & \texttt{["H", "C", "O"]} & atom types whose rho values are fit \\
+\texttt{base\_atoms} & empty list & atom types from previous stages \\
+\texttt{sij\_mode} & \texttt{explicit} & explicit Sij fitting mode \\
+\texttt{sij\_pair\_selection} & \texttt{auto} & automatic explicit pair generation \\
+\texttt{optimize\_*} & \texttt{false} & parameter is fixed unless enabled \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{\texttt{initial\_parameter\_file}}
+
+\begin{lstlisting}[language=toml]
+initial_parameter_file = "../1_CHO/cho_stage.params.toml"
+\end{lstlisting}
+
+\textbf{Purpose.}
+Reads a parameter file generated by a previous fit. This is the standard way to
+perform staged parametrization. For example, CHO parameters can be optimized in
+the first stage, written to a parameter file, and then loaded in the N stage.
+
+\textbf{Default behavior.}
+If \texttt{initial\_parameter\_file} is not provided, no previous parameter file
+is read. The program starts from built-in default values for rho, Sij, and GB
+distance parameters. The output file prints a warning explaining that no initial
+parameter file was supplied.
+
+\textbf{Use in staged fitting.}
+When this option is provided, previously optimized values are loaded before the
+new optimization starts. Loaded parameters remain fixed unless the current input
+explicitly requests that they be optimized again.
+
+\subsection{General Model Constants}
+
+\subsubsection{\texttt{solvent\_eps}}
+
+\begin{lstlisting}[language=toml]
+solvent_eps = 78.3553
+\end{lstlisting}
+
+Solvent dielectric constant used in the GB polarization energy. The default
+value, \texttt{78.3553}, is appropriate for water at standard conditions used in
+the current workflow.
+
+\subsubsection{\texttt{gb\_sij}}
+
+\begin{lstlisting}[language=toml]
+gb_sij = 0.75
+\end{lstlisting}
+
+Default pairwise descreening scale factor. If Sij parameters are not optimized,
+this value is used as the global Sij value. If Sij parameters are optimized, the
+initial values normally come from the internal Sij table or from a loaded
+parameter file, but \texttt{gb\_sij} remains the global fallback value.
+
+\subsubsection{\texttt{gb\_cij}}
+
+\begin{lstlisting}[language=toml]
+gb_cij = 0.0
+\end{lstlisting}
+
+Additive term in the GB gamma expression. The default is zero. In the current
+parametrization workflow, this parameter is normally kept fixed.
+
+\subsection{GB Distance Parameters}
+
+The GB distance parameters control the denominator used in the off-diagonal GB
+gamma terms. \textsc{Paramfit} supports one general distance parameter and three
+special hydrogen-containing pair parameters:
+
+\begin{center}
+\begin{tabular}{ll}
+\toprule
+Parameter & Applied atom pairs \\
+\midrule
+\texttt{gb\_dij} & all pairs not covered by \texttt{dch}, \texttt{doh}, or \texttt{dnh} \\
+\texttt{dch} & C--H and H--C \\
+\texttt{doh} & O--H and H--O \\
+\texttt{dnh} & N--H and H--N \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The pair matching is symmetric. Therefore, \texttt{dch} is used for both C--H
+and H--C, \texttt{doh} is used for both O--H and H--O, and \texttt{dnh} is used
+for both N--H and H--N.
+
+\subsubsection{\texttt{gb\_dij}}
+
+\begin{lstlisting}[language=toml]
+gb_dij = 3.7
+\end{lstlisting}
+
+General GB distance parameter, also referred to as d0. It is used for every atom
+pair that is not C--H, O--H, or N--H. Examples include C--C, C--O, O--O, H--H,
+C--N, S--H, P--H, and halogen--H pairs.
+
+\subsubsection{\texttt{dch}, \texttt{doh}, and \texttt{dnh}}
+
+\begin{lstlisting}[language=toml]
+dch = 3.7
+doh = 3.7
+dnh = 3.7
+\end{lstlisting}
+
+Special GB distance parameters for C--H, O--H, and N--H pairs. These values may
+be fixed or optimized depending on the corresponding optimization flags.
+
+\subsection{Atom Selection}
+
+\subsubsection{\texttt{fit\_atoms}}
+
+\begin{lstlisting}[language=toml]
+fit_atoms = ["H", "C", "O"]
+\end{lstlisting}
+
+Atom types whose intrinsic Coulomb radii, rho, are included in the optimization
+vector. If \texttt{fit\_atoms = ["N"]}, only rho for N is optimized, while
+previously loaded H, C, and O rho values remain fixed.
+
+\subsubsection{\texttt{base\_atoms}}
+
+\begin{lstlisting}[language=toml]
+base_atoms = ["H", "C", "O"]
+\end{lstlisting}
+
+Atom types that have already been parametrized in previous stages. This option
+is mainly used with \texttt{sij\_pair\_selection = "fit-with-base"} to generate
+Sij pairs between newly fitted atom types and previously fitted atom types.
+
+\subsection{Sij Parametrization}
+
+\subsubsection{\texttt{sij\_mode}}
+
+\begin{lstlisting}[language=toml]
+sij_mode = "explicit"
+\end{lstlisting}
+
+Fits selected Sij pairs independently. This is useful for later stages where a
+new atom type is added and only pairs involving the new atom should be fitted.
+
+\begin{lstlisting}[language=toml]
+sij_mode = "grouped"
+\end{lstlisting}
+
+Fits Sij values through a predefined grouping scheme. Grouped fitting reduces
+the number of independent Sij parameters and is useful when a stage should
+remain close to a compact parametrization model.
+
+\subsubsection{\texttt{sij\_group\_scheme}}
+
+\begin{lstlisting}[language=toml]
+sij_group_scheme = "hco"
+\end{lstlisting}
+
+Uses the grouped CHO Sij scheme. This option is meaningful only when
+\texttt{sij\_mode = "grouped"}.
+
+\begin{lstlisting}[language=toml]
+sij_group_scheme = "halogen"
+\end{lstlisting}
+
+Uses the grouped halogen Sij scheme. In this scheme, halogens are treated as a
+shared group for selected Sij patterns.
+
+\subsubsection{\texttt{sij\_pair\_selection}}
+
+This option is used only when \texttt{sij\_mode = "explicit"}.
+
+\begin{lstlisting}[language=toml]
+sij_pair_selection = "auto"
+\end{lstlisting}
+
+Generates all ordered pairs within \texttt{fit\_atoms}. For
+\texttt{fit\_atoms = ["H", "C", "O"]}, this produces H--H, H--C, H--O, C--H,
+C--C, C--O, O--H, O--C, and O--O.
+
+\begin{lstlisting}[language=toml]
+sij_pair_selection = "fit-with-base"
+\end{lstlisting}
+
+Generates Sij pairs between \texttt{fit\_atoms} and \texttt{base\_atoms}, in
+both directions, and also includes the self-pair of each fitted atom. For
+example:
+
+\begin{lstlisting}[language=toml]
+fit_atoms = ["N"]
+base_atoms = ["H", "C", "O"]
+sij_pair_selection = "fit-with-base"
+\end{lstlisting}
+
+generates N--N, N--H, H--N, N--C, C--N, N--O, and O--N.
+
+\begin{lstlisting}[language=toml]
+sij_pair_selection = "manual"
+fit_sij_pairs = [["N", "H"], ["H", "N"]]
+\end{lstlisting}
+
+Uses exactly the Sij pairs listed in \texttt{fit\_sij\_pairs}.
+
+\subsection{Optimization Flags}
+
+The following Boolean flags determine which parameters are included in the
+optimizer vector:
+
+\begin{center}
+\begin{tabular}{ll}
+\toprule
+Flag & Effect \\
+\midrule
+\texttt{optimize\_sij} & optimize selected Sij parameters \\
+\texttt{optimize\_dij} & optimize \texttt{gb\_dij}, the general d0 parameter \\
+\texttt{optimize\_dch} & optimize the C--H / H--C distance parameter \\
+\texttt{optimize\_doh} & optimize the O--H / H--O distance parameter \\
+\texttt{optimize\_dnh} & optimize the N--H / H--N distance parameter \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+If a flag is \texttt{false}, the corresponding parameter is fixed at its input
+value or at the value loaded from \texttt{initial\_parameter\_file}. If a flag is
+\texttt{true}, the corresponding parameter is optimized starting from that
+value.
+
+\subsection{Typical Stage Examples}
+
+\textbf{CHO stage.}
+
+\begin{lstlisting}[language=toml]
+[parameters]
+solvent_eps = 78.3553
+gb_sij = 0.75
+gb_dij = 3.7
+dch = 3.7
+doh = 3.7
+gb_cij = 0.0
+
+fit_atoms = ["H", "C", "O"]
+sij_mode = "grouped"
+sij_group_scheme = "hco"
+
+optimize_sij = true
+optimize_dij = true
+optimize_dch = true
+optimize_doh = true
+\end{lstlisting}
+
+\textbf{N stage.}
+
+\begin{lstlisting}[language=toml]
+[parameters]
+initial_parameter_file = "../1_CHO/cho_stage.params.toml"
+
+fit_atoms = ["N"]
+base_atoms = ["H", "C", "O"]
+
+sij_mode = "explicit"
+sij_pair_selection = "fit-with-base"
+
+optimize_sij = true
+optimize_dnh = true
+\end{lstlisting}
+
+\section{The \texttt{[optimization]} Block}
+
+The \texttt{[optimization]} block controls the numerical optimization procedure.
+It selects the optimizer, the scalar objective function used by the global
+optimizer, population-search settings, local least-squares settings, and
+convergence tolerances passed to the local optimizer.
+
+This block does not choose which physical parameters are optimized. That choice
+is made in the \texttt{[parameters]} block through flags such as
+\texttt{optimize\_sij}, \texttt{optimize\_dij}, \texttt{optimize\_dch},
+\texttt{optimize\_doh}, and \texttt{optimize\_dnh}. The
+\texttt{[optimization]} block controls how the selected parameter vector is
+optimized.
+
+\subsection{Recommended Global Usage}
+
+For production parametrization, the recommended starting point is a global
+differential-evolution search using the MAE/MAX objective:
+
+\begin{lstlisting}[language=toml]
+[optimization]
+algorithm = "global"
+objective = "mae-max"
+max_penalty_weight = 1.0
+
+global_maxiter = 80
+popsize = 15
+seed = 1
+polish = true
+\end{lstlisting}
+
+This setup performs a population-based global search and then optionally applies
+a local polishing step. It is usually more appropriate than a purely local
+least-squares fit when the optimized parameters are nonlinear and bounded.
+
+\subsection{Complete Usage}
+
+All available options in the \texttt{[optimization]} block are:
+
+\begin{lstlisting}[language=toml]
+[optimization]
+algorithm = "global"
+objective = "mae-max"
+max_penalty_weight = 1.0
+
+global_maxiter = 80
+popsize = 15
+seed = 1
+polish = true
+
+max_nfev = 200
+ftol = 1.0e-12
+xtol = 1.0e-12
+gtol = 1.0e-12
+\end{lstlisting}
+
+\subsection{Default Values}
+
+If the user does not provide custom values, the following defaults are used:
+
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+Option & Default value & Meaning \\
+\midrule
+\texttt{algorithm} & local & optimizer selection \\
+\texttt{objective} & \texttt{mae} & scalar objective for global search \\
+\texttt{max\_penalty\_weight} & \texttt{1.0} & penalty weight for \texttt{mae-max} \\
+\texttt{global\_maxiter} & \texttt{80} & differential-evolution generations \\
+\texttt{popsize} & \texttt{15} & population multiplier \\
+\texttt{seed} & \texttt{1} & random seed for global search \\
+\texttt{polish} & \texttt{true} & final local refinement after global search \\
+\texttt{max\_nfev} & \texttt{200} & maximum local function evaluations \\
+\texttt{ftol} & \texttt{1.0e-12} & local optimizer cost tolerance \\
+\texttt{xtol} & \texttt{1.0e-12} & local optimizer step tolerance \\
+\texttt{gtol} & \texttt{1.0e-12} & local optimizer gradient tolerance \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{\texttt{algorithm}}
+
+\begin{lstlisting}[language=toml]
+algorithm = "global"
+\end{lstlisting}
+
+Selects the global optimizer. In this mode, \textsc{Paramfit} uses SciPy's
+\path{differential_evolution} routine. This is a population-based optimizer. It
+explores the bounded parameter space by maintaining a population of trial
+parameter vectors and evolving them over multiple generations.
+
+\begin{lstlisting}[language=toml]
+algorithm = "local"
+\end{lstlisting}
+
+Selects the local optimizer. In this mode, \textsc{Paramfit} uses
+\texttt{scipy.optimize.least\_squares}. The local optimizer minimizes the vector
+of signed residuals:
+
+\begin{lstlisting}
+residual_i = calculated_i - reference_i
+\end{lstlisting}
+
+The local optimizer can be useful when the starting parameters are already close
+to a good solution. It is less robust when the initial guess is poor or when the
+objective landscape has multiple local minima.
+
+\textbf{Default behavior.}
+If \texttt{algorithm} is not provided, the program uses the local optimizer.
+For nonlinear parametrization work, explicitly setting
+\texttt{algorithm = "global"} is usually recommended.
+
+\subsection{\texttt{objective}}
+
+\begin{lstlisting}[language=toml]
+objective = "mae"
+\end{lstlisting}
+
+Minimizes the mean absolute error:
+
+\begin{lstlisting}
+MAE = mean(abs(calculated_i - reference_i))
+\end{lstlisting}
+
+\begin{lstlisting}[language=toml]
+objective = "rmse"
+\end{lstlisting}
+
+Minimizes the root mean square error:
+
+\begin{lstlisting}
+RMSE = sqrt(mean((calculated_i - reference_i)^2))
+\end{lstlisting}
+
+\begin{lstlisting}[language=toml]
+objective = "mae-max"
+\end{lstlisting}
+
+Minimizes MAE while penalizing large maximum errors. The objective is:
+
+\begin{lstlisting}
+objective = MAE + max_penalty_weight * max(0, MAX - max_tol)^2
+\end{lstlisting}
+
+Here \texttt{MAX} is the largest absolute error in the data set. The
+\texttt{max\_tol} value is defined in the \texttt{[tolerances]} block.
+
+\textbf{Important.}
+The \texttt{objective} option is used by the global optimizer. The local
+least-squares optimizer always works with the signed residual vector, because
+that is the mathematical interface required by \texttt{least\_squares}.
+
+\subsection{\texttt{max\_penalty\_weight}}
+
+\begin{lstlisting}[language=toml]
+max_penalty_weight = 1.0
+\end{lstlisting}
+
+Controls the strength of the maximum-error penalty when
+\texttt{objective = "mae-max"}. Increasing this value makes the optimizer more
+aggressive about reducing the worst error once it exceeds \texttt{max\_tol}.
+Decreasing it makes the objective behave more like pure MAE.
+
+This option has no effect when \texttt{objective = "mae"} or
+\texttt{objective = "rmse"}.
+
+\subsection{Global Optimizer Options}
+
+The following options are used when:
+
+\begin{lstlisting}[language=toml]
+algorithm = "global"
+\end{lstlisting}
+
+\subsubsection{\texttt{global\_maxiter}}
+
+\begin{lstlisting}[language=toml]
+global_maxiter = 80
+\end{lstlisting}
+
+Maximum number of differential-evolution generations. Larger values allow a
+longer global search and may improve the result, but the calculation becomes
+more expensive.
+
+\subsubsection{\texttt{popsize}}
+
+\begin{lstlisting}[language=toml]
+popsize = 15
+\end{lstlisting}
+
+Population-size multiplier used by differential evolution. The approximate
+number of parameter vectors in the population is:
+
+\begin{lstlisting}
+population size = popsize * number_of_optimized_parameters
+\end{lstlisting}
+
+For example, if 12 parameters are optimized and \texttt{popsize = 15}, the
+population contains approximately 180 trial parameter vectors. Increasing
+\texttt{popsize} improves sampling of the parameter space but increases the
+number of energy evaluations per generation.
+
+\subsubsection{\texttt{seed}}
+
+\begin{lstlisting}[language=toml]
+seed = 1
+\end{lstlisting}
+
+Random seed for the global optimizer. Using a fixed seed makes the run
+reproducible. Changing the seed is a useful way to test whether the result is
+robust or whether the optimizer is finding different local regions of parameter
+space.
+
+\subsubsection{\texttt{polish}}
+
+\begin{lstlisting}[language=toml]
+polish = true
+\end{lstlisting}
+
+If \texttt{true}, SciPy applies a final local minimization step after the
+differential-evolution search. This can improve the final objective value. For
+nonsmooth objectives such as \texttt{mae-max}, polishing may take additional
+time and may not always improve the result substantially.
+
+If \texttt{false}, the final result is the best parameter vector found by
+differential evolution itself.
+
+\subsection{Local Optimizer Options}
+
+The following options are used when:
+
+\begin{lstlisting}[language=toml]
+algorithm = "local"
+\end{lstlisting}
+
+They are also relevant indirectly when global polishing is enabled, although the
+main local least-squares settings are most important for explicit local runs.
+
+\subsubsection{\texttt{max\_nfev}}
+
+\begin{lstlisting}[language=toml]
+max_nfev = 200
+\end{lstlisting}
+
+Maximum number of function evaluations allowed for the local least-squares
+optimizer. If the value is too small, the optimizer may stop before fully
+converging. If it is too large, difficult fits may spend excessive time in local
+optimization.
+
+\subsubsection{\texttt{ftol}, \texttt{xtol}, and \texttt{gtol}}
+
+\begin{lstlisting}[language=toml]
+ftol = 1.0e-12
+xtol = 1.0e-12
+gtol = 1.0e-12
+\end{lstlisting}
+
+Convergence tolerances passed to \texttt{scipy.optimize.least\_squares}.
+
+\begin{itemize}[leftmargin=*]
+  \item \texttt{ftol}: tolerance for changes in the cost function.
+  \item \texttt{xtol}: tolerance for changes in the parameter vector.
+  \item \texttt{gtol}: tolerance for the gradient-based optimality condition.
+\end{itemize}
+
+Small values request a tight local convergence. They do not guarantee that the
+fit will satisfy the MAE, RMSE, or MAX targets printed in the output; those
+targets are model-quality thresholds, not optimizer stopping criteria.
+
+\subsection{Choosing Between Global and Local Optimization}
+
+\textbf{Use global optimization} when fitting nonlinear parameters such as rho,
+Sij, \texttt{gb\_dij}, \texttt{dch}, \texttt{doh}, or \texttt{dnh}, especially
+when starting from default parameters or when the fit may have multiple local
+minima.
+
+\textbf{Use local optimization} when starting from a reliable parameter file and
+only making a small refinement. Local optimization is faster, but it depends
+more strongly on the starting point.
+
+\subsection{Typical Examples}
+
+\textbf{Global MAE/MAX fit.}
+
+\begin{lstlisting}[language=toml]
+[optimization]
+algorithm = "global"
+objective = "mae-max"
+max_penalty_weight = 1.0
+global_maxiter = 80
+popsize = 15
+seed = 1
+polish = true
+\end{lstlisting}
+
+\textbf{Pure MAE global fit.}
+
+\begin{lstlisting}[language=toml]
+[optimization]
+algorithm = "global"
+objective = "mae"
+global_maxiter = 80
+popsize = 15
+seed = 1
+polish = true
+\end{lstlisting}
+
+\textbf{Local least-squares refinement.}
+
+\begin{lstlisting}[language=toml]
+[optimization]
+algorithm = "local"
+max_nfev = 500
+ftol = 1.0e-12
+xtol = 1.0e-12
+gtol = 1.0e-12
+\end{lstlisting}
+
+\section{The \texttt{[tolerances]} Block}
+
+The \texttt{[tolerances]} block defines the error thresholds used when
+\textsc{Paramfit} reports whether a fitted parameter set satisfies the requested
+quality targets. These values are printed in the output file and are used in the
+final pass/fail summary.
+
+\textbf{Important distinction.}
+The tolerances in this block are not the mathematical stopping criteria of the
+optimizer. They do not force the optimizer to stop exactly when all targets are
+met, and they do not guarantee that the final solution will satisfy every target.
+They are model-quality thresholds used to interpret the final errors. The
+optimizer stopping criteria are controlled separately in the \texttt{[optimization]}
+block.
+
+\subsection{Recommended Usage}
+
+\begin{lstlisting}[language=toml]
+[tolerances]
+mae_tol = 0.50
+rms_tol = 0.80
+max_tol = 2.50
+\end{lstlisting}
+
+These values are strict enough to be useful for monitoring the fit, while still
+being realistic for early-stage parametrization. For a publication-quality
+parametrization, the final acceptable thresholds should be chosen based on the
+training set, the chemical domain, and comparison with the reference method.
+
+\subsection{Default Values}
+
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+Option & Default & Meaning \\
+\midrule
+\texttt{mae\_tol} & \texttt{0.50} & Target mean absolute error in kcal/mol \\
+\texttt{rms\_tol} & \texttt{0.80} & Target root mean square error in kcal/mol \\
+\texttt{max\_tol} & \texttt{2.50} & Target maximum absolute error in kcal/mol \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{\texttt{mae\_tol}}
+
+\begin{lstlisting}[language=toml]
+mae_tol = 0.50
+\end{lstlisting}
+
+Defines the desired upper limit for the mean absolute error:
+
+\begin{lstlisting}
+MAE = mean(abs(calculated_i - reference_i))
+\end{lstlisting}
+
+MAE is often the primary metric for solvation-energy parametrization because it
+measures the typical unsigned error in the fitted data set. A low MAE means that
+the fitted model performs well on average, but it does not guarantee that every
+individual molecule is well described.
+
+\subsection{\texttt{rms\_tol}}
+
+\begin{lstlisting}[language=toml]
+rms_tol = 0.80
+\end{lstlisting}
+
+Defines the desired upper limit for the root mean square error:
+
+\begin{lstlisting}
+RMSE = sqrt(mean((calculated_i - reference_i)^2))
+\end{lstlisting}
+
+RMSE gives larger weight to molecules with large errors. If RMSE is much larger
+than MAE, the data set likely contains one or more difficult cases or outliers.
+This does not automatically mean the fit is wrong, but it should be inspected.
+
+\subsection{\texttt{max\_tol}}
+
+\begin{lstlisting}[language=toml]
+max_tol = 2.50
+\end{lstlisting}
+
+Defines the desired upper limit for the largest absolute error in the data set:
+
+\begin{lstlisting}
+MAX = max(abs(calculated_i - reference_i))
+\end{lstlisting}
+
+The maximum error is useful for identifying the worst-described molecule. It is
+also used when \texttt{objective = "mae-max"} is selected in the
+\texttt{[optimization]} block. In that case, the global optimizer minimizes MAE
+while adding a penalty when \texttt{MAX} exceeds \texttt{max\_tol}.
+
+\subsection{How to Interpret the Tolerance Summary}
+
+At the end of a run, \textsc{Paramfit} prints the final MAE, RMSE, and maximum
+absolute error together with the tolerance values. A typical interpretation is:
+
+\begin{itemize}[leftmargin=*]
+  \item If MAE, RMSE, and MAX all pass, the fit satisfies the requested error
+        targets for the training set.
+  \item If MAE passes but MAX fails, the average model is acceptable but one or a
+        few molecules should be inspected.
+  \item If MAE fails, the parameter model, training data, fixed parameters, or
+        selected fitting stage should be reconsidered.
+  \item If RMSE is much larger than MAE, the fit is probably dominated by a small
+        number of difficult molecules.
+\end{itemize}
+
+\section{Running PARAMFIT}
+
+The recommended way to run \textsc{Paramfit} is to place a complete input file in
+the working directory containing the reference file and MacroQC output files, and
+then run the program with the \texttt{-i} option.
+
+\subsection{Editable Installation}
+
+During development, install the package in editable mode from the repository
+root:
+
+\begin{lstlisting}[language=bash]
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+python -m pip install -e .
+\end{lstlisting}
+
+Editable installation means that Python imports the source code directly from the
+repository. After this installation, normal changes to the Python source files do
+not require running \texttt{python -m pip install -e .} again. Reinstallation is
+only needed when the packaging metadata or installed entry points are changed.
+
+\subsection{Recommended Command}
+
+\begin{lstlisting}[language=bash]
+paramfit -i input.inp
+\end{lstlisting}
+
+This command reads the input file, loads the reference data and MacroQC output
+files, runs the requested optimization, writes the main output file, and writes a
+parameter file that can be used as input for later stages.
+
+\subsection{Alternative Python Module Command}
+
+If the console command is not available, the package can also be run as a Python
+module:
+
+\begin{lstlisting}[language=bash]
+python -m paramfit.cli -i input.inp
+\end{lstlisting}
+
+This is equivalent to the \texttt{paramfit -i input.inp} command.
+
+\subsection{Working Directory Requirements}
+
+\textsc{Paramfit} expects to be run from the directory containing the data files
+for the current fitting stage. The directory should contain:
+
+\begin{itemize}[leftmargin=*]
+  \item the input file, for example \texttt{cho.inp};
+  \item the reference file, usually \texttt{ref.txt} unless another name is given;
+  \item MacroQC output files named with the expected indexed pattern;
+  \item any initial parameter file required by the current stage.
+\end{itemize}
+
+The package source directory does not have to be the same as the data directory.
+After editable installation, the command can be executed from any stage directory
+as long as the active Python environment can import the installed package.
+
+\section{Input File Examples}
+
+This section gives compact examples of complete input files. The numerical
+values shown here are starting values and workflow examples, not universal final
+parameters.
+
+\subsection{Stage 1: CHO Fit}
+
+\begin{lstlisting}[language=toml]
+[files]
+ref_file = "ref.txt"
+output_file = "cho_fit.out"
+parameter_output_file = "cho_fit.params.toml"
+
+[data]
+qcmethod = "SCF"
+charge_type = "IAO_MULLIKEN"
+
+[parameters]
+fit_atoms = ["H", "C", "O"]
+solvent_eps = 78.3553
+gb_sij = 0.75
+gb_dij = 3.7
+dch = 3.7
+doh = 3.7
+dnh = 3.7
+gb_cij = 0.0
+sij_mode = "grouped"
+sij_group_scheme = "cho"
+optimize_sij = true
+optimize_dch = true
+optimize_doh = true
+
+[optimization]
+algorithm = "global"
+objective = "mae-max"
+global_maxiter = 80
+popsize = 15
+seed = 1
+polish = true
+
+[tolerances]
+mae_tol = 0.50
+rms_tol = 0.80
+max_tol = 2.50
+\end{lstlisting}
+
+\subsection{Later Stage With Frozen CHO Parameters}
+
+\begin{lstlisting}[language=toml]
+[files]
+ref_file = "ref.txt"
+output_file = "chon_fit.out"
+parameter_output_file = "chon_fit.params.toml"
+
+[data]
+qcmethod = "SCF"
+charge_type = "IAO_MULLIKEN"
+
+[parameters]
+fit_atoms = ["N"]
+base_atoms = ["H", "C", "O"]
+initial_parameter_file = "../1_CHO/cho_fit.params.toml"
+sij_mode = "explicit"
+sij_pair_selection = "auto"
+optimize_sij = true
+optimize_dnh = true
+
+[optimization]
+algorithm = "global"
+objective = "mae-max"
+global_maxiter = 80
+popsize = 15
+seed = 1
+polish = true
+
+[tolerances]
+mae_tol = 0.50
+rms_tol = 0.80
+max_tol = 2.50
+\end{lstlisting}
+
+In this example, the CHO parameters are read from the previous parameter file.
+Only the parameters selected by the current stage are optimized. Values loaded
+from \texttt{initial\_parameter\_file} are used as fixed starting parameters
+unless their corresponding optimization flag or Sij pair selection makes them
+active in the current fit.
+
+\subsection{Manual Explicit Sij Pair Selection}
+
+\begin{lstlisting}[language=toml]
+[parameters]
+fit_atoms = ["N"]
+base_atoms = ["H", "C", "O"]
+initial_parameter_file = "../1_CHO/cho_fit.params.toml"
+sij_mode = "explicit"
+sij_pair_selection = "manual"
+fit_sij_pairs = ["N_H", "N_C", "N_O", "N_N"]
+optimize_sij = true
+\end{lstlisting}
+
+Manual pair selection should be used only when the user wants full control over
+the fitted Sij terms. For routine staged parametrization,
+\texttt{sij\_pair\_selection = "auto"} is safer because it avoids forgetting a
+pair that appears in the data set.
+
+\section{Generated Output Files}
+
+\textsc{Paramfit} writes two main files during a fitting run: the human-readable
+output file and the machine-readable parameter file.
+
+\subsection{Main Output File}
+
+The main output file is selected with:
+
+\begin{lstlisting}[language=toml]
+[files]
+output_file = "fit.out"
+\end{lstlisting}
+
+This file records the run setup, selected parameter model, optimized variables,
+final fitted values, and final error statistics. It is the primary file to read
+when judging whether a run is scientifically acceptable.
+
+The output file is designed to answer the following questions:
+
+\begin{itemize}[leftmargin=*]
+  \item Which reference file and MacroQC output files were read?
+  \item Which charge model and quantum-chemistry method were requested?
+  \item Which atom types were active in the current fitting stage?
+  \item Which rho, Sij, and distance parameters were optimized?
+  \item Which parameters were held fixed?
+  \item What are the final MAE, RMSE, and maximum absolute error?
+  \item Which molecules have the largest residuals?
+\end{itemize}
+
+\subsection{Parameter Output File}
+
+The parameter output file is selected with:
+
+\begin{lstlisting}[language=toml]
+[files]
+parameter_output_file = "fit.params.toml"
+\end{lstlisting}
+
+If \texttt{parameter\_output\_file} is not provided, \textsc{Paramfit} derives the
+name from the main output file by replacing the suffix with
+\texttt{.params.toml}. For example:
+
+\begin{lstlisting}
+fit.out -> fit.params.toml
+\end{lstlisting}
+
+The parameter file is written in TOML format and can be used as
+\texttt{initial\_parameter\_file} in the next fitting stage.
+
+\subsection{Parameter File Contents}
+
+A generated parameter file contains metadata and fitted model parameters:
+
+\begin{lstlisting}[language=toml]
+[metadata]
+source_output = "fit.out"
+sij_mode = "explicit"
+objective = "mae-max"
+cds_treatment = "fixed"
+
+[rho_ang]
+C = 1.2345678900
+H = 1.2345678900
+O = 1.2345678900
+
+[sij]
+C_H = 0.7500000000
+C_O = 0.7500000000
+
+[dij]
+d0 = 3.7000000000
+dch = 3.7000000000
+doh = 3.7000000000
+dnh = 3.7000000000
+\end{lstlisting}
+
+The \texttt{[rho\_ang]} values are written in Angstrom. Internally, the fitting
+code converts radii as needed. The \texttt{[sij]} block stores pairwise Sij terms.
+The \texttt{[dij]} block stores the general distance parameter \texttt{d0} and
+the special hydrogen-pair parameters \texttt{dch}, \texttt{doh}, and
+\texttt{dnh}.
+
+\section{Recommended Staged Workflow}
+
+The intended use of \textsc{Paramfit} is staged parametrization. A small chemical
+subset is fitted first, then its optimized parameters are carried forward and
+held fixed while new atom types are introduced.
+
+\subsection{General Rule}
+
+For each stage:
+
+\begin{enumerate}[leftmargin=*]
+  \item Build a data directory containing only the molecules for that stage.
+  \item Use the previous stage's \texttt{.params.toml} file as
+        \texttt{initial\_parameter\_file}.
+  \item Put newly introduced atom types in \texttt{fit\_atoms}.
+  \item Put previously fitted atom types in \texttt{base\_atoms}.
+  \item Optimize only the rho, Sij, and distance parameters that are chemically
+        relevant to the newly introduced atom types.
+  \item Write a new \texttt{.params.toml} file for the next stage.
+\end{enumerate}
+
+\subsection{Suggested Stage Order}
+
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+Stage & Chemical subset & Typical active atoms \\
+\midrule
+1 & CHO & \texttt{["H", "C", "O"]} \\
+2 & CHON & \texttt{["N"]} with CHO as base \\
+3 & CHONS & \texttt{["S"]} with CHON as base \\
+4 & CHONSP & \texttt{["P"]} with CHONS as base \\
+5 & Halogens & \texttt{["F", "CL", "BR"]} with CHONSP as base \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+This order keeps the parameter search smaller and makes the physical
+interpretation easier. It also reduces the risk that parameters for later atom
+types disturb the already optimized behavior of earlier subsets.
+
+\subsection{Example Stage Logic}
+
+For the CHO stage, optimize the CHO radii and the CHO-specific Sij and distance
+terms selected by the model. After the run, save the generated parameter file.
+
+For the N stage, load the CHO parameter file, keep CHO parameters fixed, and fit
+only the N radius and N-containing Sij terms. If the model requires it, also fit
+\texttt{dnh}. The same pattern can be repeated for S, P, and halogens.
+
+\section{Troubleshooting and Common Mistakes}
+
+\subsection{The Fit Starts From Default Parameters}
+
+If \texttt{initial\_parameter\_file} is not provided, \textsc{Paramfit} starts
+from the default parameter values given in the input file and code defaults. This
+is allowed, but it should be intentional. For later stages, forgetting
+\texttt{initial\_parameter\_file} usually means the fit is not using the
+parameters optimized in the earlier stage.
+
+\subsection{The Optimizer Does Not Meet the Tolerances}
+
+The tolerances are quality targets, not hard optimizer constraints. A run can
+finish normally while still failing one or more tolerances. If this happens,
+inspect:
+
+\begin{itemize}[leftmargin=*]
+  \item whether the correct reference file and MacroQC outputs were read;
+  \item whether \texttt{fit\_atoms} and \texttt{base\_atoms} describe the intended
+        stage;
+  \item whether the correct initial parameter file was loaded;
+  \item whether the selected parameter model is flexible enough for the data;
+  \item whether a few molecules dominate the maximum error.
+\end{itemize}
+
+\subsection{A Parameter Hits Its Bound}
+
+When a parameter converges to the lower or upper bound, the optimizer is asking
+for a value outside the allowed physical range. This can indicate that the
+current model is too restrictive, that the data contain difficult molecules, or
+that a previous-stage parameter should be revisited. It does not automatically
+mean the run failed, but it should be discussed and documented.
+
+\subsection{Sij Pairs Are Missing}
+
+For explicit Sij fitting, \texttt{sij\_pair\_selection = "auto"} is recommended
+unless there is a specific reason to use manual pair selection. Automatic
+selection examines the data and chooses the relevant pairs for the current
+\texttt{fit\_atoms}. Manual selection is useful for controlled experiments, but
+it can silently omit an important pair if the list is incomplete.
+
+\subsection{MAE Is Acceptable but Maximum Error Is Large}
+
+This means the model is good on average but one or a few molecules are poorly
+described. The next step is to inspect the worst residuals in the output file.
+Possible explanations include an outlier molecule, an unusual functional group,
+an inconsistent reference value, or insufficient flexibility in the selected
+parameter model.
+
+\subsection{Global Optimization Is Slow}
+
+Global optimization cost increases with the number of fitted parameters, the
+population size, and the number of generations. The approximate population size
+is proportional to:
+
+\begin{lstlisting}
+popsize * number_of_optimized_parameters
+\end{lstlisting}
+
+When many parameters are optimized simultaneously, increasing
+\texttt{global\_maxiter} or \texttt{popsize} may improve the search but will also
+increase runtime. For large stages, it is often better to keep the parameter
+model chemically focused instead of fitting every possible parameter at once.
+
+\end{document}

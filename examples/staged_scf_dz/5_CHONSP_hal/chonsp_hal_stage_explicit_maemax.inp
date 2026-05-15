@@ -1,0 +1,86 @@
+[files]
+ref_file = "ref.txt"
+output_file = "paramfit_chonsp_hal_stage_explicit_maemax.out"
+parameter_output_file = "paramfit_chonsp_hal_stage_explicit_maemax.params.toml"
+
+[data]
+qcmethod = "SCF"
+charge_type = "IAO_MULLIKEN"
+# If omitted, paramfit counts ref entries and output files automatically.
+# ndata = 271
+
+[parameters]
+solvent_eps = 78.3553
+gb_sij = 0.75
+gb_dij = 3.7
+dch = 3.7
+doh = 3.7
+dnh = 3.7
+gb_cij = 0.0
+initial_parameter_file = "../4_CHONSP/paramfit_chonsp_p_stage_explicit_maemax.params.toml"
+fit_atoms = ["F", "CL", "BR"]
+sij_mode = "explicit"
+optimize_sij = true
+sij_pair_selection = "manual"
+fit_sij_pairs = [
+    ["BR", "BR"],
+    ["BR", "C"],
+    ["BR", "CL"],
+    ["BR", "F"],
+    ["BR", "H"],
+    ["BR", "N"],
+    ["BR", "O"],
+    ["BR", "P"],
+    ["BR", "S"],
+    ["C", "BR"],
+    ["C", "CL"],
+    ["C", "F"],
+    ["CL", "BR"],
+    ["CL", "C"],
+    ["CL", "CL"],
+    ["CL", "F"],
+    ["CL", "H"],
+    ["CL", "N"],
+    ["CL", "O"],
+    ["CL", "P"],
+    ["CL", "S"],
+    ["F", "BR"],
+    ["F", "C"],
+    ["F", "CL"],
+    ["F", "F"],
+    ["F", "H"],
+    ["F", "N"],
+    ["F", "O"],
+    ["F", "P"],
+    ["F", "S"],
+    ["H", "BR"],
+    ["H", "CL"],
+    ["H", "F"],
+    ["N", "BR"],
+    ["N", "CL"],
+    ["N", "F"],
+    ["O", "BR"],
+    ["O", "CL"],
+    ["O", "F"],
+    ["P", "BR"],
+    ["P", "CL"],
+    ["P", "F"],
+    ["S", "BR"],
+    ["S", "CL"],
+    ["S", "F"],
+]
+optimize_dij = false
+
+[optimization]
+algorithm = "global"
+objective = "mae-max"
+max_penalty_weight = 1.0
+global_maxiter = 80
+popsize = 15
+seed = 1
+polish = true
+
+[tolerances]
+mae_tol = 0.50
+rms_tol = 0.80
+max_tol = 2.50

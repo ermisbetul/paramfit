@@ -32,22 +32,24 @@ class ParamFit:
     ref_file: str = "ref.txt"
     output_file: str = "paramfit.out"
     parameter_output_file: str | None = None
+    initial_parameter_file: str | None = None
 
     qcmethod: str = "SCF"
     solvent_eps: float = 78.3553
     charge_type: str = "IAO_MULLIKEN"
 
     gb_sij: float = 0.75
-    gb_dij: float = 4.0
-    gb_dch: float = 4.0
-    gb_dnh: float = 4.0
+    gb_dij: float = 3.7
+    dch: float = 3.7
+    doh: float = 3.7
+    dnh: float = 3.7
     gb_cij: float = 0.0
 
     optimize_sij: bool = False
     optimize_dij: bool = False
     optimize_dch: bool = False
+    optimize_doh: bool = False
     optimize_dnh: bool = False
-    use_dnh: bool = False
     parameter_mode: str = "explicit"
     objective: str = "mae"
     max_penalty_weight: float = 1.0
@@ -95,11 +97,14 @@ class ParamFit:
         dij = params.get("dij", {})
         if "d0" in dij:
             self.gb_dij = float(dij["d0"])
-        if "dCH" in dij:
-            self.gb_dch = float(dij["dCH"])
-        if "dNH" in dij:
-            self.gb_dnh = float(dij["dNH"])
-            self.use_dnh = True
+        distance_fields = {
+            "dch": "dch",
+            "doh": "doh",
+            "dnh": "dnh",
+        }
+        for key, attr in distance_fields.items():
+            if key in dij:
+                setattr(self, attr, float(dij[key]))
 
     def parameter_file_name(self):
         if self.parameter_output_file:
@@ -113,7 +118,14 @@ class ParamFit:
         with open(parameter_file, "w") as handle:
             handle.write("[metadata]\n")
             handle.write(f'source_output = "{self.output_file}"\n')
-            handle.write(f'parameter_mode = "{self.parameter_mode}"\n')
+            if self.parameter_mode == "explicit":
+                handle.write('sij_mode = "explicit"\n')
+            elif self.parameter_mode == "hco-grouped":
+                handle.write('sij_mode = "grouped"\n')
+                handle.write('sij_group_scheme = "hco"\n')
+            elif self.parameter_mode == "hal-grouped":
+                handle.write('sij_mode = "grouped"\n')
+                handle.write('sij_group_scheme = "halogen"\n')
             handle.write(f'objective = "{self.objective}"\n')
             handle.write("cds_treatment = \"fixed\"\n")
             handle.write("\n")
@@ -131,14 +143,14 @@ class ParamFit:
             handle.write("[dij]\n")
             if isinstance(gb_dij, dict):
                 handle.write(f"d0 = {gb_dij['d0']:.10f}\n")
-                handle.write(f"dCH = {gb_dij['dCH']:.10f}\n")
-                if "dNH" in gb_dij:
-                    handle.write(f"dNH = {gb_dij['dNH']:.10f}\n")
+                handle.write(f"dch = {gb_dij['dch']:.10f}\n")
+                handle.write(f"doh = {gb_dij['doh']:.10f}\n")
+                handle.write(f"dnh = {gb_dij['dnh']:.10f}\n")
             else:
                 handle.write(f"d0 = {gb_dij:.10f}\n")
-                handle.write(f"dCH = {self.gb_dch:.10f}\n")
-                if self.use_dnh or self.optimize_dnh:
-                    handle.write(f"dNH = {self.gb_dnh:.10f}\n")
+                handle.write(f"dch = {self.dch:.10f}\n")
+                handle.write(f"doh = {self.doh:.10f}\n")
+                handle.write(f"dnh = {self.dnh:.10f}\n")
 
         return parameter_file
 
@@ -221,7 +233,7 @@ class ParamFit:
             upper.append(3.0 / BOHR2ANG)
             names.append(("rho", atom))
 
-        if self.optimize_sij and parameter_mode in ("hco-grouped", "hco-paper"):
+        if self.optimize_sij and parameter_mode == "hco-grouped":
             for group in ["HH", "HC", "HO", "CH", "OH", "CX", "OX"]:
                 x0.append(self._initial_sij_group_value(group))
                 lower.append(0.5)
@@ -245,7 +257,7 @@ class ParamFit:
 
         if self.optimize_dij:
             x0.append(self.gb_dij)
-            if parameter_mode in ("hco-grouped", "hco-paper") or self.optimize_dch:
+            if parameter_mode == "hco-grouped" or self._optimizes_any_h_distance():
                 lower.append(3.0)
                 upper.append(5.0)
             else:
@@ -253,19 +265,26 @@ class ParamFit:
                 upper.append(8.0)
             names.append(("dij", "d0"))
 
-        if self.optimize_dch:
-            x0.append(self.gb_dch)
-            lower.append(3.0)
-            upper.append(5.0)
-            names.append(("dij", "dCH"))
-
-        if self.optimize_dnh:
-            x0.append(self.gb_dnh)
-            lower.append(3.0)
-            upper.append(5.0)
-            names.append(("dij", "dNH"))
+        distance_fields = [
+            ("dch", "dch", self.optimize_dch),
+            ("doh", "doh", self.optimize_doh),
+            ("dnh", "dnh", self.optimize_dnh),
+        ]
+        for key, attr, enabled in distance_fields:
+            if enabled:
+                x0.append(getattr(self, attr))
+                lower.append(3.0)
+                upper.append(5.0)
+                names.append(("dij", key))
 
         return np.array(x0), (np.array(lower), np.array(upper)), names
+
+    def _optimizes_any_h_distance(self):
+        return any([
+            self.optimize_dch,
+            self.optimize_doh,
+            self.optimize_dnh,
+        ])
 
     def _initial_sij_group_value(self, group):
         values = {
@@ -336,9 +355,12 @@ class ParamFit:
     def unpack(self, x, names):
         rho = dict(self.rho_bohr)
         sij = dict(self.sij)
-        gb_dij = {"d0": self.gb_dij, "dCH": self.gb_dch}
-        if self.use_dnh or self.optimize_dnh:
-            gb_dij["dNH"] = self.gb_dnh
+        gb_dij = {
+            "d0": self.gb_dij,
+            "dch": self.dch,
+            "doh": self.doh,
+            "dnh": self.dnh,
+        }
 
         for value, name in zip(x, names):
             if name[0] == "rho":
@@ -468,13 +490,13 @@ class ParamFit:
         self.printf("  QC method                    : %s\n", self.qcmethod)
         self.printf("  Charge type                  : %s\n", self.charge_type)
         self.printf("  CDS treatment                : fixed from output files\n")
-        self.printf("  Parameter mode               : %s\n", self.parameter_mode)
+        self.printf("  Sij mode                     : %s\n", self.parameter_mode)
         self.printf("  Objective                    : %s\n", self.objective.upper())
         self.printf("  Optimize Sij                 : %s\n", str(self.optimize_sij))
         self.printf("  Optimize d0                  : %s\n", str(self.optimize_dij))
-        self.printf("  Optimize dCH                 : %s\n", str(self.optimize_dch))
-        self.printf("  Use dNH                     : %s\n", str(self.use_dnh or self.optimize_dnh))
-        self.printf("  Optimize dNH                : %s\n", str(self.optimize_dnh))
+        self.printf("  Optimize dch                 : %s\n", str(self.optimize_dch))
+        self.printf("  Optimize doh                 : %s\n", str(self.optimize_doh))
+        self.printf("  Optimize dnh                 : %s\n", str(self.optimize_dnh))
         self.printf("  Fit atoms                    : %s\n", ", ".join(self.fit_atoms))
         if self.optimize_sij and self.fit_sij_pairs:
             self.printf("  Optimized Sij pairs          :\n")
@@ -802,6 +824,20 @@ class ParamFit:
         self.printf("    Atomic charge model         : %s\n", self.charge_type)
         self.printf("    Reference energy unit       : kcal/mol\n")
         self.printf("    CDS free energy treatment   : read from output files and kept fixed\n")
+        if self.initial_parameter_file:
+            self.printf("    Initial parameter file      : %s\n", self.initial_parameter_file)
+            self.printf("    Initial parameter source    : user-provided parameter file\n")
+        else:
+            self.printf("    Initial parameter file      : not provided\n")
+            self.printf("    Initial parameter source    : built-in default values\n")
+            self.printf("\n")
+            self.printf("    WARNING: No initial parameter file was provided.\n")
+            self.printf("             If you want to start from a previous fit or from a custom initial guess,\n")
+            self.printf("             provide a parameter file in the input with:\n")
+            self.printf("                [parameters]\n")
+            self.printf("                initial_parameter_file = \"path/to/parameters.toml\"\n")
+            self.printf("             Since no file was provided, the fit will start from the built-in\n")
+            self.printf("             default radii, Sij values, and GB distance parameters.\n")
         self.printf("\n")
         self.printf("    Reference file format:\n")
         self.printf("       [data index] [solvation free energy in kcal/mol]\n")

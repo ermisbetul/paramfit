@@ -49,7 +49,7 @@ def _auto_sij_pairs(data, fit_atoms):
 
 def _sij_pairs_with_base(fit_atoms, base_atoms):
     if not fit_atoms:
-        raise RuntimeError("sij_pair_mode='fit-with-base' requires fit_atoms.")
+        raise RuntimeError("sij_pair_selection='fit-with-base' requires fit_atoms.")
 
     fit = [atom.upper() for atom in fit_atoms]
     base = [atom.upper() for atom in (base_atoms or [])]
@@ -76,21 +76,25 @@ class InputConfig:
     charge_type: str = "IAO_MULLIKEN"
     solvent_eps: float = 78.3553
     gb_sij: float = 0.75
-    gb_dij: float = 4.0
-    gb_dch: float = 4.0
-    gb_dnh: float = 4.0
+    gb_dij: float = 3.7
+    dch: float = 3.7
+    doh: float = 3.7
+    dnh: float = 3.7
     gb_cij: float = 0.0
     fit_atoms: list[str] | None = dataclasses.field(default_factory=lambda: ["H", "C", "O"])
     base_atoms: list[str] | None = dataclasses.field(default_factory=list)
     initial_parameter_file: str | None = None
+    sij_mode: str | None = None
+    sij_group_scheme: str | None = None
     parameter_mode: str = "explicit"
     optimize_sij: bool = False
+    sij_pair_selection: str | None = None
     sij_pair_mode: str = "auto"
     fit_sij_pairs: list[tuple[str, str]] | None = None
     optimize_dij: bool = False
     optimize_dch: bool = False
+    optimize_doh: bool = False
     optimize_dnh: bool = False
-    use_dnh: bool = False
     global_search: bool = False
     global_maxiter: int = 80
     popsize: int = 15
@@ -140,6 +144,36 @@ def _output_from_input(input_file):
     return str(Path(input_file).with_suffix(".out"))
 
 
+def _normalize_sij_options(cfg):
+    if cfg.sij_pair_selection is not None:
+        selection = cfg.sij_pair_selection.lower()
+        if selection == "manual":
+            cfg.sij_pair_mode = "explicit"
+        elif selection in ("auto", "fit-with-base"):
+            cfg.sij_pair_mode = selection
+        else:
+            raise RuntimeError(
+                "sij_pair_selection must be 'auto', 'fit-with-base', or 'manual'."
+            )
+
+    if cfg.sij_mode is not None:
+        sij_mode = cfg.sij_mode.lower()
+        if sij_mode == "explicit":
+            cfg.parameter_mode = "explicit"
+        elif sij_mode == "grouped":
+            scheme = (cfg.sij_group_scheme or "hco").lower()
+            if scheme in ("hco", "cho"):
+                cfg.parameter_mode = "hco-grouped"
+            elif scheme in ("halogen", "hal", "halo"):
+                cfg.parameter_mode = "hal-grouped"
+            else:
+                raise RuntimeError(
+                    "sij_group_scheme must be 'hco' or 'halogen' when sij_mode='grouped'."
+                )
+        else:
+            raise RuntimeError("sij_mode must be 'explicit' or 'grouped'.")
+
+
 def read_input_file(input_file):
     with open(input_file, "rb") as handle:
         raw = tomllib.load(handle)
@@ -148,7 +182,6 @@ def read_input_file(input_file):
 
     files = _require_table(raw, "files")
     data = _require_table(raw, "data")
-    model = _require_table(raw, "model")
     parameters = _require_table(raw, "parameters")
     optimization = _require_table(raw, "optimization")
     tolerances = _require_table(raw, "tolerances")
@@ -161,24 +194,25 @@ def read_input_file(input_file):
     cfg.qcmethod = data.get("qcmethod", cfg.qcmethod)
     cfg.charge_type = data.get("charge_type", cfg.charge_type)
 
-    cfg.solvent_eps = model.get("solvent_eps", cfg.solvent_eps)
-    cfg.gb_sij = model.get("gb_sij", cfg.gb_sij)
-    cfg.gb_dij = model.get("gb_dij", cfg.gb_dij)
-    cfg.gb_dch = model.get("gb_dch", cfg.gb_dch)
-    cfg.gb_dnh = model.get("gb_dnh", cfg.gb_dnh)
-    cfg.gb_cij = model.get("gb_cij", cfg.gb_cij)
-
     cfg.fit_atoms = _optional_atoms(parameters.get("fit_atoms", cfg.fit_atoms))
     cfg.base_atoms = _optional_atoms(parameters.get("base_atoms", cfg.base_atoms))
     cfg.initial_parameter_file = parameters.get("initial_parameter_file", cfg.initial_parameter_file)
-    cfg.parameter_mode = parameters.get("parameter_mode", cfg.parameter_mode)
+    cfg.solvent_eps = parameters.get("solvent_eps", cfg.solvent_eps)
+    cfg.gb_sij = parameters.get("gb_sij", cfg.gb_sij)
+    cfg.gb_dij = parameters.get("gb_dij", cfg.gb_dij)
+    cfg.dch = parameters.get("dch", cfg.dch)
+    cfg.doh = parameters.get("doh", cfg.doh)
+    cfg.dnh = parameters.get("dnh", cfg.dnh)
+    cfg.gb_cij = parameters.get("gb_cij", cfg.gb_cij)
+    cfg.sij_mode = parameters.get("sij_mode", cfg.sij_mode)
+    cfg.sij_group_scheme = parameters.get("sij_group_scheme", cfg.sij_group_scheme)
     cfg.optimize_sij = parameters.get("optimize_sij", cfg.optimize_sij)
-    cfg.sij_pair_mode = parameters.get("sij_pair_mode", cfg.sij_pair_mode)
+    cfg.sij_pair_selection = parameters.get("sij_pair_selection", cfg.sij_pair_selection)
     cfg.fit_sij_pairs = _optional_pairs(parameters.get("fit_sij_pairs", cfg.fit_sij_pairs))
     cfg.optimize_dij = parameters.get("optimize_dij", cfg.optimize_dij)
     cfg.optimize_dch = parameters.get("optimize_dch", cfg.optimize_dch)
+    cfg.optimize_doh = parameters.get("optimize_doh", cfg.optimize_doh)
     cfg.optimize_dnh = parameters.get("optimize_dnh", cfg.optimize_dnh)
-    cfg.use_dnh = parameters.get("use_dnh", cfg.use_dnh)
 
     algorithm = optimization.get("algorithm")
     if algorithm is not None:
@@ -218,39 +252,40 @@ def build_parser():
     parser.add_argument("--solvent-eps", type=float, default=None)
     parser.add_argument("--gb-sij", type=float, default=None)
     parser.add_argument("--gb-dij", type=float, default=None)
-    parser.add_argument("--gb-dch", type=float, default=None)
-    parser.add_argument("--gb-dnh", type=float, default=None)
+    parser.add_argument("--dch", type=float, default=None)
+    parser.add_argument("--doh", type=float, default=None)
+    parser.add_argument("--dnh", type=float, default=None)
     parser.add_argument("--gb-cij", type=float, default=None)
 
     parser.add_argument("--fit-atoms", type=_parse_atoms, default=None)
     parser.add_argument("--base-atoms", type=_parse_atoms, default=None)
     parser.add_argument("--initial-parameter-file", default=None)
     parser.add_argument(
-        "--parameter-mode",
-        choices=["explicit", "hco-grouped", "hco-paper", "hal-grouped"],
+        "--sij-mode",
+        choices=["explicit", "grouped"],
         default=None,
-        help=(
-            "Sij parametrization mode. 'explicit' fits each selected Sij pair "
-            "independently; 'hco-grouped' uses the seven grouped CHO scale "
-            "parameters; 'hal-grouped' fits shared X/Y halogen groups where "
-            "X means F, CL, or BR."
-        ),
+        help="Use explicit pairwise Sij values or grouped Sij parameters.",
+    )
+    parser.add_argument(
+        "--sij-group-scheme",
+        choices=["hco", "cho", "halogen", "hal", "halo"],
+        default=None,
+        help="Grouped Sij scheme. Used only with --sij-mode grouped.",
     )
     parser.add_argument("--optimize-sij", action="store_true")
     parser.add_argument(
-        "--sij-pair-mode",
-        choices=["auto", "fit-with-base", "explicit"],
+        "--sij-pair-selection",
+        choices=["auto", "fit-with-base", "manual"],
         default=None,
         help=(
-            "How Sij pairs are generated when optimize_sij is true. "
-            "'auto' pairs fit_atoms with itself; 'fit-with-base' pairs fit_atoms "
-            "with base_atoms in both directions; 'explicit' requires fit_sij_pairs."
+            "How explicit Sij pairs are selected. 'manual' requires "
+            "--fit-sij-pairs."
         ),
     )
     parser.add_argument("--fit-sij-pairs", type=_parse_pairs, default=None)
     parser.add_argument("--optimize-dij", action="store_true")
     parser.add_argument("--optimize-dch", action="store_true")
-    parser.add_argument("--use-dnh", action="store_true")
+    parser.add_argument("--optimize-doh", action="store_true")
     parser.add_argument("--optimize-dnh", action="store_true")
 
     parser.add_argument("--global-search", action="store_true")
@@ -290,14 +325,16 @@ def build_config(args):
         "solvent_eps",
         "gb_sij",
         "gb_dij",
-        "gb_dch",
-        "gb_dnh",
+        "dch",
+        "doh",
+        "dnh",
         "gb_cij",
         "fit_atoms",
         "base_atoms",
         "initial_parameter_file",
-        "parameter_mode",
-        "sij_pair_mode",
+        "sij_mode",
+        "sij_group_scheme",
+        "sij_pair_selection",
         "fit_sij_pairs",
         "global_maxiter",
         "popsize",
@@ -316,15 +353,21 @@ def build_config(args):
         if value is not None:
             setattr(cfg, attr, value)
 
-    for attr in ["optimize_sij", "optimize_dij", "optimize_dch", "use_dnh", "optimize_dnh", "global_search"]:
+    for attr in [
+        "optimize_sij",
+        "optimize_dij",
+        "optimize_dch",
+        "optimize_doh",
+        "optimize_dnh",
+        "global_search",
+    ]:
         if getattr(args, attr):
             setattr(cfg, attr, True)
 
     if args.no_polish:
         cfg.polish = False
 
-    if cfg.parameter_mode == "hco-paper":
-        cfg.parameter_mode = "hco-grouped"
+    _normalize_sij_options(cfg)
 
     return cfg
 
@@ -367,7 +410,7 @@ def main():
         if cfg.sij_pair_mode == "fit-with-base":
             fit_sij_pairs = _sij_pairs_with_base(cfg.fit_atoms, cfg.base_atoms)
         elif cfg.sij_pair_mode == "explicit":
-            raise RuntimeError("sij_pair_mode='explicit' requires fit_sij_pairs.")
+            raise RuntimeError("sij_pair_selection='manual' requires fit_sij_pairs.")
         else:
             fit_sij_pairs = _auto_sij_pairs(data, cfg.fit_atoms)
 
@@ -383,6 +426,7 @@ def main():
         ref_file=cfg.ref_file,
         output_file=cfg.output,
         parameter_output_file=cfg.parameter_output_file,
+        initial_parameter_file=cfg.initial_parameter_file,
 
         qcmethod=cfg.qcmethod,
         solvent_eps=cfg.solvent_eps,
@@ -390,8 +434,9 @@ def main():
 
         gb_sij=cfg.gb_sij,
         gb_dij=cfg.gb_dij,
-        gb_dch=cfg.gb_dch,
-        gb_dnh=cfg.gb_dnh,
+        dch=cfg.dch,
+        doh=cfg.doh,
+        dnh=cfg.dnh,
         gb_cij=cfg.gb_cij,
 
         fit_atoms=cfg.fit_atoms,
@@ -399,8 +444,8 @@ def main():
         optimize_sij=cfg.optimize_sij,
         optimize_dij=cfg.optimize_dij,
         optimize_dch=cfg.optimize_dch,
+        optimize_doh=cfg.optimize_doh,
         optimize_dnh=cfg.optimize_dnh,
-        use_dnh=cfg.use_dnh,
         parameter_mode=cfg.parameter_mode,
         objective=cfg.objective,
         max_penalty_weight=cfg.max_penalty_weight,

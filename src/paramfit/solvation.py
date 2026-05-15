@@ -100,11 +100,13 @@ class GBSolvationModel:
     @staticmethod
     def get_dij(symbol_i, symbol_j, gb_dij):
         if isinstance(gb_dij, dict):
-            pair = {symbol_i, symbol_j}
+            pair = set((symbol_i, symbol_j))
             if pair == {"C", "H"}:
-                return gb_dij.get("dCH", gb_dij.get("d0"))
-            if pair == {"N", "H"} and "dNH" in gb_dij:
-                return gb_dij.get("dNH", gb_dij.get("d0"))
+                return gb_dij.get("dch", gb_dij.get("d0"))
+            if pair == {"O", "H"}:
+                return gb_dij.get("doh", gb_dij.get("d0"))
+            if pair == {"N", "H"}:
+                return gb_dij.get("dnh", gb_dij.get("d0"))
             return gb_dij.get("d0")
 
         return gb_dij
